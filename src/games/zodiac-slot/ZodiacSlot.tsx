@@ -313,8 +313,6 @@ export default function ZodiacSlot() {
           </div>
         </div>
 
-        <p className={styles.leverLabel}>↓ 오른쪽 막대를 당겨보세요</p>
-
         <div className={styles.result} aria-live="polite">
           {result === "win" && (
             <div className={`${styles.winCard} ${styles.enter}`}>
@@ -322,7 +320,7 @@ export default function ZodiacSlot() {
               <span className={`${styles.spark} ${styles.sparkS2}`}>🎉</span>
               <span className={`${styles.spark} ${styles.sparkS3}`}>🎊</span>
               <span className={`${styles.spark} ${styles.sparkS4}`}>✨</span>
-              <span className={styles.headline}>🎉 당첨! 세 마리가 같아요 🎉</span>
+              <span className={styles.headline}>🎉 당첨! 🎉</span>
               <span className={styles.sub}>복이 들어왔어요</span>
             </div>
           )}
@@ -333,6 +331,8 @@ export default function ZodiacSlot() {
             </span>
           )}
         </div>
+
+        <p className={styles.leverLabel}>↓ 오른쪽 막대를 당겨보세요</p>
 
         <p className={styles.note}>몇 번이든 다시 당길 수 있어요</p>
       </div>
