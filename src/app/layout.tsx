@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Vibecoding KGU",
-  description: "경기대학교 바이브코딩 팀 프로젝트",
+  title: "열두 동물 놀이터",
+  description: "열두 동물과 함께 즐기는 12개의 미니게임",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
