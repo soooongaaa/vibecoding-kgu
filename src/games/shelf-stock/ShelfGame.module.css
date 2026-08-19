@@ -46,6 +46,16 @@
   border-radius: 8px;
   padding: 8px 12px;
   background: #fff;
+  touch-action: none;
+  cursor: grab;
+}
+
+.dragging {
+  position: fixed;
+  z-index: 10;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  cursor: grabbing;
 }
 
 .productName {
