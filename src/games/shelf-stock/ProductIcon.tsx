@@ -166,19 +166,168 @@ function BatteryIcon() {
   );
 }
 
+function CoffeeIcon() {
+  return (
+    <>
+      <rect x="13" y="6" width="14" height="28" rx="4" fill="#5b3a22" />
+      <rect x="13" y="15" width="14" height="9" fill="#c9a06a" />
+      <ellipse cx="20" cy="6.5" rx="7" ry="2.2" fill="#8f7255" />
+      <path d="M16.5 18 h7 v3 h-7 Z" fill="#4a2c16" opacity="0.55" />
+    </>
+  );
+}
+
+function JellyIcon() {
+  return (
+    <>
+      <path d="M10 14 h20 l-2 18 q-8 3-16 0 Z" fill="#f472a5" />
+      <path d="M10 14 q10-6 20 0 Z" fill="#ff9dc2" />
+      <circle cx="16" cy="22" r="2.2" fill="#fff" opacity="0.75" />
+      <circle cx="24" cy="26" r="1.8" fill="#fff" opacity="0.6" />
+    </>
+  );
+}
+
+function CupRamenIcon() {
+  return (
+    <>
+      <path d="M11 12 h18 l-2.5 22 q-6.5 2-13 0 Z" fill="#f0433a" />
+      <ellipse cx="20" cy="12" rx="9" ry="2.8" fill="#ffe08a" />
+      <rect x="12.5" y="19" width="15" height="5" rx="1.5" fill="#fff" opacity="0.9" />
+      <path d="M14 27 h12" stroke="#c62828" strokeWidth="1.6" strokeLinecap="round" />
+    </>
+  );
+}
+
+function MaskIcon() {
+  return (
+    <>
+      <path d="M11 14 h18 v9 q0 6-9 8 q-9-2-9-8 Z" fill="#eaf6ff" stroke="#a9d4ea" strokeWidth="1.3" />
+      <path d="M11 18 h18" stroke="#c8e4f2" strokeWidth="1.2" />
+      <path d="M11 22 h18" stroke="#c8e4f2" strokeWidth="1.2" />
+      <path d="M11 15 q-6 3-4 8" stroke="#a9d4ea" strokeWidth="1.6" fill="none" />
+      <path d="M29 15 q6 3 4 8" stroke="#a9d4ea" strokeWidth="1.6" fill="none" />
+    </>
+  );
+}
+
+function OnigiriIcon() {
+  return (
+    <>
+      <path d="M20 7 L33 30 q-13 4-26 0 Z" fill="#fdfcf5" stroke="#e6e0cc" strokeWidth="1.2" />
+      <path d="M12 24 h16 l1.5 6 q-9 3-18.5 0 Z" fill="#3d4a3a" />
+      <circle cx="18" cy="18" r="1.2" fill="#f0a3a3" />
+      <circle cx="23" cy="21" r="1.2" fill="#f0a3a3" />
+    </>
+  );
+}
+
+function LunchboxIcon() {
+  return (
+    <>
+      <rect x="6" y="14" width="28" height="18" rx="3" fill="#3e4a5c" />
+      <rect x="6" y="11" width="28" height="5" rx="2.5" fill="#5d6d82" />
+      <rect x="9" y="19" width="10" height="10" rx="2" fill="#fdfcf5" />
+      <rect x="21" y="19" width="10" height="4.5" rx="1.5" fill="#f0a34a" />
+      <rect x="21" y="25" width="10" height="4" rx="1.5" fill="#7bc86c" />
+    </>
+  );
+}
+
+function SandwichIcon() {
+  return (
+    <>
+      <path d="M8 30 L20 8 L32 30 Z" fill="#f6d79b" />
+      <path d="M11.5 25 L20 9.5 L28.5 25 Z" fill="#fff8e8" />
+      <path d="M13 22 L20 13 L27 22 Z" fill="#7bc86c" />
+      <path d="M15 19 L20 16 L25 19 Z" fill="#f08a72" />
+    </>
+  );
+}
+
+function GimbapIcon() {
+  return (
+    <>
+      <circle cx="20" cy="20" r="14" fill="#3d4a3a" />
+      <circle cx="20" cy="20" r="11" fill="#fdfcf5" />
+      <circle cx="20" cy="20" r="4" fill="#f0a34a" />
+      <circle cx="16" cy="16" r="2" fill="#7bc86c" />
+      <circle cx="24" cy="16.5" r="2" fill="#f08a72" />
+      <circle cx="16.5" cy="24" r="2" fill="#ffd76b" />
+    </>
+  );
+}
+
+function ConeIcon() {
+  return (
+    <>
+      <path d="M13 18 L20 35 L27 18 Z" fill="#e2b271" />
+      <path d="M15 21 L25 21 M16 25 L24 25" stroke="#c99a5b" strokeWidth="1" />
+      <circle cx="20" cy="14" r="7.5" fill="#fff0f4" />
+      <circle cx="16" cy="12" r="4.5" fill="#ffc2d6" />
+      <circle cx="24" cy="12.5" r="4.5" fill="#b8e5c9" />
+      <circle cx="20" cy="7" r="2" fill="#f0433a" />
+    </>
+  );
+}
+
+function BarIcon() {
+  return (
+    <>
+      <rect x="16" y="27" width="8" height="9" rx="2" fill="#e2b271" />
+      <rect x="10" y="5" width="20" height="25" rx="7" fill="#8a5a34" />
+      <rect x="12.5" y="8" width="6" height="8" rx="3" fill="#fff" opacity="0.28" />
+    </>
+  );
+}
+
+function CupIceIcon() {
+  return (
+    <>
+      <path d="M11 17 h18 l-2 17 q-7 2-14 0 Z" fill="#fdfcf5" stroke="#e0dccd" strokeWidth="1.2" />
+      <ellipse cx="20" cy="17" rx="9" ry="3" fill="#ffd1e0" />
+      <circle cx="16" cy="14" r="4" fill="#ffc2d6" />
+      <circle cx="23" cy="14.5" r="4" fill="#c9a7e8" />
+      <rect x="18.5" y="20" width="3" height="13" rx="1.5" fill="#e2b271" />
+    </>
+  );
+}
+
+function TubeIcon() {
+  return (
+    <>
+      <path d="M15 6 h10 v24 q0 5-5 5 t-5-5 Z" fill="#7fd4f0" />
+      <rect x="14" y="4" width="12" height="4" rx="2" fill="#4bb8e0" />
+      <path d="M17.5 11 v14" stroke="#fff" strokeWidth="2" strokeLinecap="round" opacity="0.55" />
+    </>
+  );
+}
+
 const ICONS: Record<string, () => React.ReactElement> = {
   cola: ColaIcon,
   juice: JuiceIcon,
   water: WaterIcon,
+  coffee: CoffeeIcon,
   chips: ChipsIcon,
   chocolate: ChocolateIcon,
   cookie: CookieIcon,
+  jelly: JellyIcon,
   ramen: RamenIcon,
   udon: UdonIcon,
   jjajang: JjajangIcon,
+  cupramen: CupRamenIcon,
   tissue: TissueIcon,
   toothbrush: ToothbrushIcon,
   battery: BatteryIcon,
+  mask: MaskIcon,
+  onigiri: OnigiriIcon,
+  lunchbox: LunchboxIcon,
+  sandwich: SandwichIcon,
+  gimbap: GimbapIcon,
+  cone: ConeIcon,
+  bar: BarIcon,
+  cupice: CupIceIcon,
+  tube: TubeIcon,
 };
 
 export function ProductIcon({ product }: { product: Product }) {
