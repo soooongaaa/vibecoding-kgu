@@ -2,6 +2,10 @@
 
 경기대학교 바이브코딩 프로젝트. Next.js(App Router) + Supabase + Vercel 배포.
 
+**배포 주소: https://vibecoding-kgu.vercel.app**
+
+`main` 브랜치에 푸시하면 Vercel이 자동으로 프로덕션 배포합니다.
+
 ## 스택
 
 | 항목 | 내용 |
