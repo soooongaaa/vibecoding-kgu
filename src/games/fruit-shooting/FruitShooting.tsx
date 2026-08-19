@@ -81,17 +81,53 @@ function getAudioContext(ref: { current: AudioContext | null }): AudioContext {
 }
 
 function playPopSound(ctx: AudioContext) {
+  const now = ctx.currentTime;
+
+  const noiseDuration = 0.06;
+  const bufferSize = Math.max(1, Math.floor(ctx.sampleRate * noiseDuration));
+  const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+  const data = noiseBuffer.getChannelData(0);
+  for (let i = 0; i < bufferSize; i++) {
+    data[i] = (Math.random() * 2 - 1) * (1 - i / bufferSize);
+  }
+
+  const noiseSource = ctx.createBufferSource();
+  noiseSource.buffer = noiseBuffer;
+
+  const noiseFilter = ctx.createBiquadFilter();
+  noiseFilter.type = "bandpass";
+  noiseFilter.frequency.value = 1200;
+
+  const noiseGain = ctx.createGain();
+  noiseGain.gain.setValueAtTime(0.9, now);
+  noiseGain.gain.exponentialRampToValueAtTime(0.001, now + noiseDuration);
+
+  noiseSource.connect(noiseFilter);
+  noiseFilter.connect(noiseGain);
+  noiseGain.connect(ctx.destination);
+  noiseSource.start(now);
+  noiseSource.stop(now + noiseDuration);
+
+  const thumpDuration = 0.1;
   const oscillator = ctx.createOscillator();
-  const gain = ctx.createGain();
-  oscillator.type = "triangle";
-  oscillator.frequency.setValueAtTime(600, ctx.currentTime);
-  oscillator.frequency.exponentialRampToValueAtTime(120, ctx.currentTime + 0.12);
-  gain.gain.setValueAtTime(0.3, ctx.currentTime);
-  gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.12);
-  oscillator.connect(gain);
-  gain.connect(ctx.destination);
-  oscillator.start();
-  oscillator.stop(ctx.currentTime + 0.12);
+  const oscGain = ctx.createGain();
+  oscillator.type = "sine";
+  oscillator.frequency.setValueAtTime(320, now);
+  oscillator.frequency.exponentialRampToValueAtTime(70, now + thumpDuration);
+  oscGain.gain.setValueAtTime(0.7, now);
+  oscGain.gain.exponentialRampToValueAtTime(0.001, now + thumpDuration);
+  oscillator.connect(oscGain);
+  oscGain.connect(ctx.destination);
+  oscillator.start(now);
+  oscillator.stop(now + thumpDuration);
+}
+
+function drawCloud(ctx: CanvasRenderingContext2D, x: number, y: number) {
+  ctx.beginPath();
+  ctx.arc(x, y, 22, 0, Math.PI * 2);
+  ctx.arc(x + 26, y - 10, 26, 0, Math.PI * 2);
+  ctx.arc(x + 52, y, 20, 0, Math.PI * 2);
+  ctx.fill();
 }
 
 export default function FruitShooting() {
@@ -183,11 +219,28 @@ export default function FruitShooting() {
     const draw = () => {
       ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
-      ctx.fillStyle = "#0f172a";
+      const skyGradient = ctx.createLinearGradient(0, 0, 0, CANVAS_HEIGHT);
+      skyGradient.addColorStop(0, "#bae6fd");
+      skyGradient.addColorStop(1, "#e0f2fe");
+      ctx.fillStyle = skyGradient;
       ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
-      ctx.fillStyle = "#1e293b";
-      ctx.fillRect(0, CANVAS_HEIGHT - 20, CANVAS_WIDTH, 20);
+      ctx.fillStyle = "#ffffff";
+      drawCloud(ctx, 130, 90);
+      drawCloud(ctx, 520, 60);
+      drawCloud(ctx, 740, 140);
+
+      ctx.fillStyle = "#4ade80";
+      ctx.fillRect(0, CANVAS_HEIGHT - 20, CANVAS_WIDTH, 6);
+      ctx.fillStyle = "#86efac";
+      ctx.fillRect(0, CANVAS_HEIGHT - 14, CANVAS_WIDTH, 14);
+
+      ctx.textAlign = "center";
+      ctx.textBaseline = "alphabetic";
+      ctx.font = "16px sans-serif";
+      for (let i = 0; i < 6; i++) {
+        ctx.fillText("🌼", 60 + i * 150, CANVAS_HEIGHT - 4);
+      }
 
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
