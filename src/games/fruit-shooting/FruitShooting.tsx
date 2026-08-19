@@ -66,6 +66,34 @@ function spawnParticles(x: number, y: number, color: string): Particle[] {
   return particles;
 }
 
+function getAudioContext(ref: { current: AudioContext | null }): AudioContext {
+  if (!ref.current) {
+    const AudioContextConstructor =
+      window.AudioContext ??
+      (window as unknown as { webkitAudioContext: typeof AudioContext })
+        .webkitAudioContext;
+    ref.current = new AudioContextConstructor();
+  }
+  if (ref.current.state === "suspended") {
+    void ref.current.resume();
+  }
+  return ref.current;
+}
+
+function playPopSound(ctx: AudioContext) {
+  const oscillator = ctx.createOscillator();
+  const gain = ctx.createGain();
+  oscillator.type = "triangle";
+  oscillator.frequency.setValueAtTime(600, ctx.currentTime);
+  oscillator.frequency.exponentialRampToValueAtTime(120, ctx.currentTime + 0.12);
+  gain.gain.setValueAtTime(0.3, ctx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.12);
+  oscillator.connect(gain);
+  gain.connect(ctx.destination);
+  oscillator.start();
+  oscillator.stop(ctx.currentTime + 0.12);
+}
+
 export default function FruitShooting() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [phase, setPhase] = useState<Phase>("ready");
@@ -82,6 +110,7 @@ export default function FruitShooting() {
   const lastSpawnRef = useRef(-SPAWN_INTERVAL_MS);
   const lastFrameTimeRef = useRef<number | null>(null);
   const lastEmittedSecondsRef = useRef(Math.ceil(GAME_DURATION_MS / 1000));
+  const audioContextRef = useRef<AudioContext | null>(null);
 
   const resetGame = useCallback(() => {
     targetsRef.current = [];
@@ -125,6 +154,7 @@ export default function FruitShooting() {
         FRUIT_JUICE_COLOR[hitTarget.fruit],
       ),
     );
+    playPopSound(getAudioContext(audioContextRef));
     hitCountRef.current += 1;
     setHitCount(hitCountRef.current);
   }, []);
@@ -135,6 +165,12 @@ export default function FruitShooting() {
     },
     [shootAt],
   );
+
+  useEffect(() => {
+    return () => {
+      audioContextRef.current?.close();
+    };
+  }, []);
 
   useEffect(() => {
     const canvas = canvasRef.current;
