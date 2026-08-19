@@ -1,109 +1,641 @@
+/*
+ * 아이소메트릭 편의점 테마.
+ * 주의: 드래그 중인 칩은 position: fixed 를 쓰므로,
+ * .page / .tray 및 그 조상에는 transform 을 절대 걸지 않는다.
+ * (transform 이 걸리면 fixed 의 기준이 뷰포트가 아니게 되어 좌표가 어긋난다)
+ */
+
 .page {
   min-height: 100dvh;
-  padding: 16px;
+  padding: 18px 12px 32px;
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  align-items: center;
+  gap: 14px;
+  background: linear-gradient(#dcf0fb 0%, #eaf7f0 42%, #f7f2e6 100%);
+}
+
+/* ── 상단 HUD ─────────────────────────────── */
+
+.hud {
+  width: 100%;
+  max-width: 720px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
 }
 
 .title {
-  font-size: 1.5rem;
-  text-align: center;
+  margin: 0;
+  padding: 8px 18px;
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #4a443a;
+  background: #fff;
+  border: 3px solid #ffd166;
+  border-radius: 999px;
+  box-shadow: 0 3px 0 #e9b949, 0 6px 14px rgba(0, 0, 0, 0.12);
 }
+
+.hudActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.soundButton {
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  font-size: 1.05rem;
+  line-height: 1;
+  border: 3px solid #ffd166;
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: 0 3px 0 #e9b949, 0 5px 10px rgba(0, 0, 0, 0.12);
+  cursor: pointer;
+}
+
+.soundButton:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 #e9b949;
+}
+
+.restartButton {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 999px;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #fff;
+  background: linear-gradient(#87d888, #4fa055);
+  box-shadow: 0 4px 0 #3d8a42, 0 6px 12px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+}
+
+.restartButton:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 #3d8a42;
+}
+
+.timer {
+  padding: 8px 14px;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #4a443a;
+  background: #fff;
+  border: 3px solid #a8d8f0;
+  border-radius: 999px;
+  box-shadow: 0 3px 0 #7bbfe0, 0 5px 10px rgba(0, 0, 0, 0.12);
+  font-variant-numeric: tabular-nums;
+}
+
+.timerLow {
+  color: #fff;
+  background: linear-gradient(#ff8a80, #ef5350);
+  border-color: #ffb4a8;
+  box-shadow: 0 3px 0 #c62828, 0 5px 10px rgba(0, 0, 0, 0.15);
+  animation: timerPulse 0.7s ease-in-out infinite;
+}
+
+@keyframes timerPulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.08);
+  }
+}
+
+/* ── 매장 (벽 + 바닥) ─────────────────────── */
+
+.store {
+  position: relative;
+  width: 100%;
+  max-width: 720px;
+  border: 4px solid #fff;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.14);
+}
+
+.wall {
+  position: relative;
+  height: 86px;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.55) 0 15px,
+      rgba(255, 255, 255, 0) 15px 30px
+    ),
+    linear-gradient(#eef7f1, #ddeee5);
+  border-bottom: 7px solid #d9b98d;
+}
+
+.poster,
+.posterAlt,
+.clock {
+  position: absolute;
+  pointer-events: none;
+}
+
+.poster {
+  top: 16px;
+  left: 34px;
+  width: 42px;
+  height: 52px;
+  border-radius: 5px;
+  background: linear-gradient(#ffb4a8, #f28f7f);
+  border: 3px solid #fff;
+  box-shadow: 0 3px 7px rgba(0, 0, 0, 0.16);
+}
+
+.posterAlt {
+  top: 22px;
+  right: 44px;
+  width: 56px;
+  height: 40px;
+  border-radius: 5px;
+  background: linear-gradient(#a8d8f0, #7bbfe0);
+  border: 3px solid #fff;
+  box-shadow: 0 3px 7px rgba(0, 0, 0, 0.16);
+}
+
+.clock {
+  top: 24px;
+  left: 50%;
+  width: 34px;
+  height: 34px;
+  margin-left: -17px;
+  border-radius: 50%;
+  background: #fff;
+  border: 4px solid #d9b98d;
+  box-shadow: 0 3px 7px rgba(0, 0, 0, 0.14);
+}
+
+.floor {
+  position: relative;
+  min-height: 320px;
+  padding: 26px 18px 34px;
+  background-color: #faf6ec;
+  background-image:
+    repeating-linear-gradient(
+      45deg,
+      transparent 0 24px,
+      rgba(150, 128, 96, 0.09) 24px 26px
+    ),
+    repeating-linear-gradient(
+      -45deg,
+      transparent 0 24px,
+      rgba(150, 128, 96, 0.09) 24px 26px
+    );
+}
+
+.plantLeft,
+.plantRight {
+  position: absolute;
+  bottom: 10px;
+  pointer-events: none;
+}
+
+.plantLeft {
+  left: 10px;
+}
+
+.plantRight {
+  right: 10px;
+}
+
+/* ── 진열대 (아이소메트릭) ─────────────────── */
 
 .categories {
+  position: relative;
+  z-index: 1;
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
+  gap: 30px 26px;
+  max-width: 500px;
+  margin: 0 auto;
 }
 
-.categoryBox {
-  border: 2px dashed #999;
-  border-radius: 12px;
-  min-height: 96px;
-  padding: 8px;
+.shelfSlot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  min-height: 158px;
 }
 
-.categoryLabel {
-  font-size: 1rem;
-  text-align: center;
-  margin: 0;
+.shelfSign {
+  padding: 3px 13px;
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: #5b5348;
+  background: #fff;
+  border: 2px solid #ffd166;
+  border-radius: 999px;
+  box-shadow: 0 2px 0 #e9b949;
 }
 
-.tray {
+/* 회전 없는 정면 진열대. 두께감은 다단 그림자로 표현한다. */
+.shelf {
+  width: 148px;
+  height: 104px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  background: linear-gradient(#f6e0ba, #e7c694);
+  border: 2px solid #d7ab77;
+  box-shadow:
+    0 5px 0 #d0a670,
+    0 10px 0 #bd9260,
+    0 17px 20px rgba(0, 0, 0, 0.2);
+  transition: filter 0.15s ease;
+}
+
+.shelf:hover {
+  filter: brightness(1.05);
+}
+
+.placedRow {
+  width: 128px;
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 4px;
+  align-items: center;
   justify-content: center;
 }
 
-.productChip {
+/* ── 라운드 종료 오버레이 ─────────────────── */
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: rgba(42, 35, 26, 0.55);
+  animation: overlayIn 0.28s ease-out both;
+}
+
+@keyframes overlayIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.overlayTitle {
+  margin: 0;
+  padding: 10px 28px;
+  font-size: 1.3rem;
+  font-weight: 900;
+  color: #fff;
+  border-radius: 999px;
+  animation: overlayPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes overlayPop {
+  from {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.overlayWin {
+  background: linear-gradient(#ffd76b, #f5a623);
+  box-shadow: 0 4px 0 #d98e12, 0 8px 18px rgba(0, 0, 0, 0.25);
+}
+
+.overlayLose {
+  background: linear-gradient(#ff8a80, #e53935);
+  box-shadow: 0 4px 0 #b71c1c, 0 8px 18px rgba(0, 0, 0, 0.25);
+}
+
+.overlayText {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+.overlayButton {
+  margin-top: 4px;
+  padding: 11px 26px;
+  border: none;
+  border-radius: 999px;
+  font-size: 1rem;
+  font-weight: 800;
+  color: #fff;
+  background: linear-gradient(#87d888, #4fa055);
+  box-shadow: 0 4px 0 #3d8a42, 0 6px 14px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+}
+
+.overlayButton:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 #3d8a42;
+}
+
+/* ── 하단 상품 트레이 ─────────────────────── */
+
+.tray {
+  width: 100%;
+  max-width: 720px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  padding: 16px 14px;
+  border: 3px solid #fff;
+  border-radius: 18px;
+  background: linear-gradient(#f8e6c9, #eed2a8);
+  box-shadow:
+    0 6px 16px rgba(0, 0, 0, 0.12),
+    inset 0 2px 0 rgba(255, 255, 255, 0.6);
+}
+
+.trayIdle {
+  opacity: 0.75;
+}
+
+/* 물류 박스 개봉 연출 */
+
+.unboxing {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 4px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  padding: 8px 12px;
-  background: #fff;
-  touch-action: none;
-  cursor: grab;
+  width: 100%;
 }
 
-.dragging {
-  position: fixed;
-  z-index: 10;
-  transform: translate(-50%, -50%);
-  pointer-events: none;
-  cursor: grabbing;
+.boxRow {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+.box {
+  animation:
+    boxDrop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both,
+    boxFade 0.5s ease-in 1.6s both;
+}
+
+.boxRow > .box:nth-child(2) {
+  animation-delay: 0.12s, 1.66s;
+}
+
+.boxRow > .box:nth-child(3) {
+  animation-delay: 0.24s, 1.72s;
+}
+
+@keyframes boxDrop {
+  0% {
+    transform: translateY(-130px) scale(0.9);
+    opacity: 0;
+  }
+  60% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes boxFade {
+  from {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(12px) scale(0.72);
+    opacity: 0;
+  }
+}
+
+/* 뚜껑은 안쪽 모서리를 축으로 바깥으로 젖혀진다 */
+.flapLeft,
+.flapRight {
+  transform-box: fill-box;
+}
+
+.flapLeft {
+  transform-origin: 100% 100%;
+  animation: flapOpenLeft 0.5s ease-out 0.95s both;
+}
+
+.flapRight {
+  transform-origin: 0% 100%;
+  animation: flapOpenRight 0.5s ease-out 0.95s both;
+}
+
+@keyframes flapOpenLeft {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(-118deg);
+  }
+}
+
+@keyframes flapOpenRight {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(118deg);
+  }
+}
+
+.unboxingText {
+  margin: 0;
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #8a7454;
+  animation: unboxingBlink 1.1s ease-in-out infinite;
+}
+
+@keyframes unboxingBlink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.45;
+  }
+}
+
+.productChip {
+  width: 64px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 8px 4px 6px;
+  border: 2px solid #ffe0a3;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 3px 0 #ecca88, 0 5px 10px rgba(0, 0, 0, 0.1);
+  touch-action: none;
+  cursor: grab;
+  user-select: none;
+  animation: chipPop 0.34s ease-out both;
+}
+
+/* 박스에서 상품이 쏟아져 나오는 등장 연출 */
+@keyframes chipPop {
+  0% {
+    transform: translateY(-16px) scale(0.6);
+    opacity: 0;
+  }
+  60% {
+    transform: translateY(0) scale(1.08);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
 }
 
 .productName {
-  font-size: 0.75rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #5b5348;
 }
 
-.placedRow {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-  margin-top: 4px;
+/*
+ * 집어 든 카드는 포인터에 매달린 것처럼 좌우로 흔들린다.
+ * transform-origin 을 위쪽 가장자리로 옮겨 진자처럼 아래가 크게 흔들리게 하고,
+ * keyframes 마다 translate(-50%, -50%) 를 반드시 함께 써야
+ * 포인터 중심 정렬이 유지된다.
+ */
+.dragging {
+  position: fixed;
+  z-index: 10;
+  transform-origin: 50% 0%;
+  transform: translate(-50%, -50%) scale(1.12) rotate(0deg);
+  animation: chipWobble 0.62s ease-in-out infinite;
+  pointer-events: none;
+  cursor: grabbing;
+  box-shadow: 0 12px 22px rgba(0, 0, 0, 0.28);
 }
+
+@keyframes chipWobble {
+  0% {
+    transform: translate(-50%, -50%) scale(1.12) rotate(-7deg);
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.12) rotate(7deg);
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1.12) rotate(-7deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dragging {
+    animation: none;
+    transform: translate(-50%, -50%) scale(1.12) rotate(-4deg);
+  }
+}
+
+/* ── 정오답 피드백 ────────────────────────── */
 
 .feedbackCorrect {
-  outline: 3px solid #2e9e44;
+  outline: 3px solid #4fa055;
+  outline-offset: 2px;
+  border-radius: 14px;
 }
 
 .feedbackWrong {
-  outline: 3px solid #d9534f;
+  outline: 3px solid #ef6b62;
+  outline-offset: 2px;
+  border-radius: 14px;
+  background: #fff1ef;
 }
 
-.completeBanner {
-  text-align: center;
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: #2e9e44;
-}
-
-.restartButton {
-  align-self: center;
-  padding: 8px 20px;
-  border-radius: 8px;
-  border: none;
-  background: #333;
-  color: #fff;
-  font-size: 1rem;
-}
+/* ── 모바일 ───────────────────────────────── */
 
 @media (max-width: 480px) {
+  .hud {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .title {
+    font-size: 0.95rem;
+    padding: 7px 14px;
+  }
+
+  .timer {
+    padding: 6px 11px;
+    font-size: 0.85rem;
+  }
+
+  .soundButton {
+    width: 36px;
+    height: 36px;
+    font-size: 0.9rem;
+  }
+
+  .restartButton {
+    padding: 8px 15px;
+    font-size: 0.85rem;
+  }
+
+  .box {
+    width: 64px;
+    height: 64px;
+  }
+
+  .floor {
+    padding: 20px 10px 26px;
+  }
+
   .categories {
-    grid-template-columns: 1fr;
+    gap: 22px 14px;
+  }
+
+  .shelfSlot {
+    min-height: 128px;
+  }
+
+  .shelf {
+    width: 118px;
+    height: 84px;
+  }
+
+  .placedRow {
+    width: 102px;
+    gap: 2px;
+  }
+
+  .plantLeft,
+  .plantRight {
+    display: none;
   }
 
   .productChip {
-    padding: 6px 8px;
+    width: 56px;
+    padding: 6px 3px 5px;
   }
 
   .productName {
-    font-size: 0.7rem;
+    font-size: 0.66rem;
   }
 }
