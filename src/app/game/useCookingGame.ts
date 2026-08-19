@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { BoardItem, PREVIEW_SECONDS, STAGES, STAGE_TIME_LIMIT_SECONDS, buildBoard } from "./gameData";
+import { SFX, setBgmMuted, startBgm, unlockAudio } from "./sound";
 
 type Status = "idle" | "preview" | "playing" | "stageClear" | "failed" | "won";
 type FailReason = "wrong" | "timeout" | null;
@@ -13,59 +14,72 @@ export function useCookingGame() {
   const [stageIndex, setStageIndex] = useState(0);
   const [board, setBoard] = useState<BoardItem[]>([]);
   const [stack, setStack] = useState<StackItem[]>([]);
-  const [progress, setProgress] = useState(0);
   const [timeLeft, setTimeLeft] = useState(STAGE_TIME_LIMIT_SECONDS);
   const [previewTimeLeft, setPreviewTimeLeft] = useState(PREVIEW_SECONDS);
   const [clearedStage, setClearedStage] = useState(0);
   const [totalTimeMs, setTotalTimeMs] = useState<number | null>(null);
+  const [musicMuted, setMusicMuted] = useState(false);
   const gameStartRef = useRef<number | null>(null);
 
   function beginStage(index: number) {
     setStageIndex(index);
     setStack([]);
-    setProgress(0);
     setBoard([]);
     setPreviewTimeLeft(PREVIEW_SECONDS);
     setStatus("preview");
   }
 
   function start() {
+    unlockAudio(); // this click is a user gesture — unlock audio for later SFX
+    startBgm();
     gameStartRef.current = Date.now();
     setTotalTimeMs(null);
     setFailReason(null);
     beginStage(0);
   }
 
+  function toggleMusic() {
+    setMusicMuted((prev) => {
+      const next = !prev;
+      setBgmMuted(next);
+      return next;
+    });
+  }
+
   function handleSelect(item: BoardItem) {
     if (status !== "playing") return;
+    SFX.click();
     const stage = STAGES[stageIndex];
-    const expectedName = stage.correctSequence[progress];
 
-    if (item.isDecoy || item.name !== expectedName) {
+    if (item.isDecoy) {
       setFailReason("wrong");
       setStatus("failed");
+      SFX.fail();
       return;
     }
 
+    // Order doesn't matter — a correct ingredient just has to be picked at
+    // some point. Each stage's correct set has no repeats, so once the bowl
+    // holds as many items as the recipe needs, it's complete.
     setBoard((prev) => prev.filter((entry) => entry.instanceId !== item.instanceId));
-    setStack((prev) => [...prev, { name: item.name, emoji: item.emoji }]);
-    const nextProgress = progress + 1;
+    const nextStack = [...stack, { name: item.name, emoji: item.emoji }];
+    setStack(nextStack);
 
-    if (nextProgress < stage.correctSequence.length) {
-      setProgress(nextProgress);
+    if (nextStack.length < stage.correctIngredients.length) {
       return;
     }
 
-    // stage cleared
     if (stageIndex === STAGES.length - 1) {
       const startedAt = gameStartRef.current ?? Date.now();
       setTotalTimeMs(Date.now() - startedAt);
       setStatus("won");
+      SFX.success();
       return;
     }
 
     setClearedStage(stageIndex + 1);
     setStatus("stageClear");
+    SFX.success();
   }
 
   // recipe preview countdown -> reveal the shuffled board and start the stage timer
@@ -94,6 +108,7 @@ export function useCookingGame() {
         if (current <= 1) {
           setFailReason("timeout");
           setStatus("failed");
+          SFX.fail();
           return 0;
         }
         return current - 1;
@@ -118,12 +133,13 @@ export function useCookingGame() {
     currentStageName: STAGES[stageIndex].name,
     board,
     stack,
-    progress,
     timeLeft,
     previewTimeLeft,
     clearedStage,
     totalTimeMs,
+    musicMuted,
     start,
     handleSelect,
+    toggleMusic,
   };
 }

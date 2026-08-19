@@ -241,30 +241,71 @@ button.secondary { background: #eef2ff; color: #3730a3; }
 }
 .game-shell .recipe-step .emoji { font-size: 26px; }
 .game-shell .recipe-step .label { font-size: 10.5px; }
-.game-shell .arrow { color: var(--pink); font-size: 18px; font-weight: 700; }
 
-.game-shell .plate-wrap { display: grid; justify-items: center; padding: 2px 0 4px; }
-.game-shell .plate { position: relative; width: 132px; height: 112px; }
-.game-shell .plate::before {
+/* mixing bowl: every correct pick drops in, laid out so nothing overlaps */
+.game-shell .bowl-wrap { display: grid; justify-items: center; padding: 2px 0 4px; }
+.game-shell .bowl {
+  position: relative;
+  width: 190px;
+  min-height: 78px;
+  margin-top: 10px;
+  background: linear-gradient(180deg, #fff 0%, #ffeef4 100%);
+  border: 3px solid var(--pink);
+  border-radius: 0 0 70px 70px / 0 0 55px 55px;
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-end;
+  justify-content: center;
+  gap: 6px 8px;
+  padding: 10px 14px 12px;
+}
+.game-shell .bowl::before {
   content: "";
   position: absolute;
   left: 50%;
-  bottom: 2px;
-  width: 124px;
-  height: 38px;
+  top: -9px;
+  width: 190px;
+  height: 18px;
   background: #fff;
   border: 3px solid var(--pink);
   border-radius: 50%;
   transform: translateX(-50%);
 }
-.game-shell .stack-item {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 32px;
+.game-shell .bowl-item {
+  font-size: 24px;
   line-height: 1;
-  filter: drop-shadow(0 3px 2px rgba(107, 66, 88, 0.2));
+  filter: drop-shadow(0 2px 2px rgba(107, 66, 88, 0.2));
 }
+@media (prefers-reduced-motion: no-preference) {
+  .game-shell .bowl-item { animation: game-drop-in 0.3s ease-out; }
+}
+@keyframes game-drop-in {
+  0% { opacity: 0; transform: translateY(-22px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.game-shell .dish-reveal {
+  font-size: 60px;
+  line-height: 1;
+  filter: drop-shadow(0 6px 6px rgba(107, 66, 88, 0.22));
+}
+@media (prefers-reduced-motion: no-preference) {
+  .game-shell .dish-reveal { animation: game-pop 0.4s cubic-bezier(0.2, 0.9, 0.3, 1.3); }
+}
+
+.game-shell .mute-btn {
+  appearance: none;
+  border: 2px solid var(--panel-border);
+  background: #fff;
+  border-radius: 999px;
+  width: 34px;
+  height: 34px;
+  font-size: 15px;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+}
+.game-shell .mute-btn:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
 
 .game-shell .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; }
 .game-shell .tile {
