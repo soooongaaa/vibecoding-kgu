@@ -1,0 +1,196 @@
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: "Malgun Gothic", "Segoe UI", sans-serif;
+  background: #1b1230;
+  color: #f0e9ff;
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 20px;
+  background: #2a1a4a;
+}
+
+.topbar h1 { font-size: 1.2rem; margin: 0; }
+
+.coin-display {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #ffd76a;
+}
+
+.tabs {
+  display: flex;
+  background: #221639;
+}
+
+.tab-btn {
+  flex: 1;
+  padding: 12px;
+  background: none;
+  border: none;
+  color: #cbb9ff;
+  font-size: 1rem;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+}
+
+.tab-btn.active {
+  color: #fff;
+  border-bottom: 3px solid #ffd76a;
+  background: #2f1f52;
+}
+
+main { padding: 20px; max-width: 720px; margin: 0 auto; }
+
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+.puzzle-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.puzzle-header button {
+  padding: 8px 18px;
+  font-size: 1rem;
+  cursor: pointer;
+  background: #ffd76a;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+}
+
+.puzzle-board {
+  display: grid;
+  gap: 8px;
+  justify-content: center;
+}
+
+.card {
+  width: 64px;
+  height: 64px;
+  background: #3a2764;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.card.flipped, .card.matched {
+  background: #4d3486;
+}
+
+.card.matched {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.puzzle-message {
+  margin-top: 14px;
+  text-align: center;
+  font-size: 1.1rem;
+  min-height: 1.5em;
+}
+
+.shop-section {
+  margin-bottom: 28px;
+  background: #241938;
+  padding: 16px;
+  border-radius: 10px;
+}
+
+.shop-section button {
+  padding: 10px 22px;
+  font-size: 1rem;
+  cursor: pointer;
+  background: #ffd76a;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+}
+
+.shop-section button:disabled {
+  background: #5a5568;
+  cursor: not-allowed;
+}
+
+.gacha-result {
+  margin-top: 12px;
+  font-size: 1.2rem;
+  min-height: 1.5em;
+}
+
+.animal-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.animal-card {
+  background: #33224f;
+  border-radius: 10px;
+  padding: 10px;
+  text-align: center;
+}
+
+.animal-card.owned { background: #4d3486; box-shadow: 0 0 0 2px #ffd76a inset; }
+.animal-card .emoji { font-size: 2.2rem; }
+.animal-card .name { font-size: 0.85rem; margin-top: 4px; }
+.animal-card .count { font-size: 0.75rem; color: #ffd76a; }
+
+.animal-card button {
+  margin-top: 8px;
+  width: 100%;
+  padding: 6px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  background: #ffd76a;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+}
+
+.animal-card button:disabled {
+  background: #5a5568;
+  cursor: not-allowed;
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.overlay.hidden { display: none; }
+
+.overlay-box {
+  background: #2a1a4a;
+  padding: 32px 40px;
+  border-radius: 14px;
+  text-align: center;
+}
+
+.overlay-box button {
+  margin-top: 16px;
+  padding: 10px 24px;
+  font-size: 1rem;
+  cursor: pointer;
+  background: #ffd76a;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+}
