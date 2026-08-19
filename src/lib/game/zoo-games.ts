@@ -1,7 +1,7 @@
 export type ZooGame = { slug: string; animal: string; emoji: string; gameName: string; color: string; href: string; available: boolean };
 
 export const zooGames: ZooGame[] = [
-  { slug: "mouse", animal: "생쥐", emoji: "🐭", gameName: "치즈 미로", color: "#91b8d7", href: "/games/mouse", available: false },
+  { slug: "mouse", animal: "생쥐", emoji: "🐭", gameName: "치즈 미로", color: "#91b8d7", href: "/games/cheese-circuit", available: true },
   { slug: "cow", animal: "얼룩소", emoji: "🐮", gameName: "초원 달리기", color: "#c99e72", href: "/games/cow", available: false },
   { slug: "tiger", animal: "호랑이", emoji: "🐯", gameName: "벽돌깨기", color: "#ed8b42", href: "/games/brick-breaker", available: true },
   { slug: "rabbit", animal: "토끼", emoji: "🐰", gameName: "당근 잡기", color: "#eea7b8", href: "/games/rabbit", available: false },

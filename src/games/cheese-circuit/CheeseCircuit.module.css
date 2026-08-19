@@ -1,0 +1,484 @@
+.wrap {
+  --accent: #91b8d7;
+  --spark: #ffd05c;
+  --plate: #16233a;
+  --plate-line: rgba(145, 184, 215, 0.22);
+  --gnawed: #0d0805;
+  --crumb: rgba(214, 176, 120, 0.55);
+  --plank-light: rgba(226, 186, 140, 0.055);
+
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  padding: 28px 16px 40px;
+  color: #f0e9df;
+  font-family: inherit;
+
+  background-color: #180f08;
+  background-image:
+    /* 벽을 갉아 파인 자국. 겹친 원이 부채꼴로 뜯긴 가장자리를 만든다. */
+    radial-gradient(circle 34px at 4% 28%, var(--gnawed) 56%, transparent 58%),
+    radial-gradient(circle 23px at 9% 36%, var(--gnawed) 56%, transparent 58%),
+    radial-gradient(circle 15px at 6% 43%, var(--gnawed) 56%, transparent 58%),
+    radial-gradient(circle 27px at 96% 18%, var(--gnawed) 56%, transparent 58%),
+    radial-gradient(circle 17px at 90% 25%, var(--gnawed) 56%, transparent 58%),
+    radial-gradient(circle 21px at 97% 68%, var(--gnawed) 56%, transparent 58%),
+    radial-gradient(circle 13px at 92% 74%, var(--gnawed) 56%, transparent 58%),
+    /* 판자에 박힌 옹이 */
+    radial-gradient(ellipse 15px 10px at 21% 11%, rgba(0, 0, 0, 0.5) 38%, transparent 72%),
+    radial-gradient(ellipse 11px 7px at 73% 52%, rgba(0, 0, 0, 0.45) 38%, transparent 72%),
+    radial-gradient(ellipse 13px 8px at 39% 86%, rgba(0, 0, 0, 0.45) 38%, transparent 72%),
+    /* 판자 이음새 */
+    repeating-linear-gradient(
+      180deg,
+      transparent 0 74px,
+      rgba(0, 0, 0, 0.5) 74px 79px
+    ),
+    /* 판자 윗면에 걸리는 빛 */
+    repeating-linear-gradient(
+      180deg,
+      var(--plank-light) 0 2px,
+      transparent 2px 79px
+    ),
+    /* 나뭇결. 각도를 살짝 틀어 결이 판자를 가로지르게 한다. */
+    repeating-linear-gradient(
+      90.5deg,
+      rgba(255, 236, 210, 0.024) 0 1px,
+      transparent 1px 6px
+    ),
+    repeating-linear-gradient(
+      89.4deg,
+      rgba(0, 0, 0, 0.11) 0 1px,
+      transparent 1px 13px
+    ),
+    radial-gradient(ellipse at 50% 0%, #3d2c1f 0%, #180f08 72%);
+}
+
+/* 갉아먹고 흘린 부스러기 */
+.wrap::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    radial-gradient(circle 2.5px at 13% 47%, var(--crumb) 99%, transparent 100%),
+    radial-gradient(circle 1.5px at 17% 52%, var(--crumb) 99%, transparent 100%),
+    radial-gradient(circle 2px at 10% 55%, var(--crumb) 99%, transparent 100%),
+    radial-gradient(circle 1.5px at 88% 33%, var(--crumb) 99%, transparent 100%),
+    radial-gradient(circle 2.5px at 93% 38%, var(--crumb) 99%, transparent 100%),
+    radial-gradient(circle 2px at 85% 79%, var(--crumb) 99%, transparent 100%),
+    radial-gradient(circle 1.5px at 91% 83%, var(--crumb) 99%, transparent 100%),
+    radial-gradient(circle 2px at 22% 92%, var(--crumb) 99%, transparent 100%),
+    radial-gradient(circle 1.5px at 28% 95%, var(--crumb) 99%, transparent 100%);
+}
+
+/* 제목 옆 판자에 뚫린 쥐구멍 */
+.mouseHole {
+  position: relative;
+  flex: none;
+  width: 74px;
+  height: 56px;
+  overflow: hidden;
+  border-radius: 37px 37px 0 0;
+  background: radial-gradient(ellipse at 50% 100%, #000000 0%, var(--gnawed) 74%);
+  box-shadow:
+    inset 0 6px 13px rgba(0, 0, 0, 0.9),
+    0 0 18px rgba(0, 0, 0, 0.5);
+  pointer-events: none;
+}
+
+/* 구멍에서 얼굴만 빼꼼 내민 생쥐 */
+.mouse {
+  --pupil-x: 0px;
+  --pupil-y: 0px;
+
+  position: absolute;
+  left: 50%;
+  bottom: -6px;
+  width: 60px;
+  height: 50px;
+  /* 구멍이 작아진 만큼 얼굴도 통째로 줄인다. 눈동자 이동폭도 같이 줄어든다. */
+  transform: translateX(-50%) scale(0.82);
+  transform-origin: bottom center;
+}
+
+.ear {
+  position: absolute;
+  top: 0;
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 55%, #d98fa0 0 32%, #6f7a89 34%);
+}
+
+.earLeft {
+  left: -5px;
+}
+
+.earRight {
+  right: -5px;
+}
+
+.face {
+  position: absolute;
+  inset: 9px 3px 0;
+  border-radius: 50% 50% 44% 44%;
+  background: linear-gradient(170deg, #a3aebd 0%, #7b8695 58%, #59636f 100%);
+  box-shadow: inset 0 -6px 10px rgba(0, 0, 0, 0.35);
+}
+
+.eye {
+  position: absolute;
+  top: 12px;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: #f4f8fd;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.3);
+  animation: blink 5.4s ease-in-out infinite;
+}
+
+.eyeLeft {
+  left: 10px;
+}
+
+.eyeRight {
+  right: 10px;
+}
+
+/* 눈동자는 JS가 --pupil-x/y 만 갱신한다. 리렌더 없이 커서를 따라본다. */
+.pupil {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 6px;
+  height: 6px;
+  margin: -3px 0 0 -3px;
+  border-radius: 50%;
+  background: #10151f;
+  transform: translate(var(--pupil-x), var(--pupil-y));
+  transition: transform 0.12s ease-out;
+}
+
+.nose {
+  position: absolute;
+  left: 50%;
+  bottom: 9px;
+  width: 9px;
+  height: 6px;
+  margin-left: -4.5px;
+  border-radius: 50%;
+  background: #e4899e;
+}
+
+.whisker {
+  position: absolute;
+  top: 27px;
+  width: 19px;
+  height: 1px;
+  background: rgba(236, 243, 252, 0.4);
+}
+
+.whiskerLeft {
+  left: -17px;
+  transform-origin: right center;
+}
+
+.whiskerRight {
+  right: -17px;
+  transform-origin: left center;
+}
+
+.whisker::before,
+.whisker::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: inherit;
+  transform-origin: inherit;
+}
+
+.whisker::before {
+  transform: rotate(12deg);
+}
+
+.whisker::after {
+  transform: rotate(-12deg);
+}
+
+@keyframes blink {
+  0%,
+  93%,
+  100% {
+    transform: scaleY(1);
+  }
+  95%,
+  97% {
+    transform: scaleY(0.1);
+  }
+}
+
+.header {
+  text-align: center;
+  max-width: 420px;
+}
+
+.eyebrow {
+  margin: 0;
+  font-size: 0.75rem;
+  letter-spacing: 0.18em;
+  color: var(--accent);
+}
+
+/* 제목과 쥐구멍을 한 줄에 두고 바닥선을 맞춘다. */
+.titleRow {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 12px;
+  margin: 4px 0 8px;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.9rem;
+}
+
+.lead {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: #a9bad2;
+}
+
+.hud {
+  display: flex;
+  gap: 8px;
+  width: min(92vw, 420px);
+}
+
+.hud span {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 8px 4px;
+  border-radius: 12px;
+  background: rgba(145, 184, 215, 0.1);
+  border: 1px solid var(--plate-line);
+}
+
+.hud small {
+  font-size: 0.68rem;
+  color: #8ba0bd;
+}
+
+.hud strong {
+  font-size: 1.05rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.boardBox {
+  position: relative;
+  display: flex;
+  justify-content: center;
+}
+
+/*
+ * 회로판. 타일과 분리된 레이어로 깔아서 마스크로 가장자리를 베어 문다.
+ * 타일 자체는 마스크 밖에 있으므로 잘리지 않는다.
+ */
+.boardBox::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 18px;
+  background: var(--plate);
+  box-shadow:
+    0 18px 40px rgba(0, 0, 0, 0.45),
+    inset 0 0 0 1px var(--plate-line);
+  pointer-events: none;
+
+  -webkit-mask-image:
+    radial-gradient(circle 19px at 24% -7px, transparent 96%, #000 100%),
+    radial-gradient(circle 13px at 35% -4px, transparent 96%, #000 100%),
+    radial-gradient(circle 16px at calc(100% + 5px) 33%, transparent 96%, #000 100%),
+    radial-gradient(circle 11px at calc(100% + 3px) 45%, transparent 96%, #000 100%),
+    radial-gradient(circle 21px at 66% calc(100% + 7px), transparent 96%, #000 100%),
+    radial-gradient(circle 14px at 53% calc(100% + 4px), transparent 96%, #000 100%),
+    radial-gradient(circle 15px at -5px 71%, transparent 96%, #000 100%),
+    linear-gradient(#000, #000);
+  mask-image:
+    radial-gradient(circle 19px at 24% -7px, transparent 96%, #000 100%),
+    radial-gradient(circle 13px at 35% -4px, transparent 96%, #000 100%),
+    radial-gradient(circle 16px at calc(100% + 5px) 33%, transparent 96%, #000 100%),
+    radial-gradient(circle 11px at calc(100% + 3px) 45%, transparent 96%, #000 100%),
+    radial-gradient(circle 21px at 66% calc(100% + 7px), transparent 96%, #000 100%),
+    radial-gradient(circle 14px at 53% calc(100% + 4px), transparent 96%, #000 100%),
+    radial-gradient(circle 15px at -5px 71%, transparent 96%, #000 100%),
+    linear-gradient(#000, #000);
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
+}
+
+.board {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(var(--cols), 1fr);
+  gap: 3px;
+  width: min(92vw, 420px);
+  aspect-ratio: 1;
+  padding: 10px;
+}
+
+/* 전선이 없는 칸은 갉아 파인 자리처럼 옴폭하게 */
+.blank {
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.22);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.55);
+}
+
+.tile {
+  position: relative;
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1;
+  padding: 0;
+  border: none;
+  border-radius: 8px;
+  background: rgba(145, 184, 215, 0.07);
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.15s ease;
+}
+
+.tile:hover {
+  background: rgba(145, 184, 215, 0.16);
+}
+
+.tile:focus-visible {
+  outline: 2px solid var(--spark);
+  outline-offset: 2px;
+}
+
+.wire {
+  width: 100%;
+  height: 100%;
+  transition: transform 0.18s ease-out;
+  fill: #52657f;
+  stroke: #52657f;
+  stroke-width: 14;
+  stroke-linecap: round;
+}
+
+.live .wire {
+  fill: var(--spark);
+  stroke: var(--spark);
+  filter: drop-shadow(0 0 6px rgba(255, 208, 92, 0.65));
+}
+
+.endpoint {
+  position: absolute;
+  font-size: clamp(0.9rem, 4.5vw, 1.4rem);
+  line-height: 1;
+  pointer-events: none;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 24px;
+  text-align: center;
+  border-radius: 18px;
+  background: rgba(9, 15, 27, 0.9);
+  backdrop-filter: blur(3px);
+}
+
+.overlay p {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: #c6d4e6;
+}
+
+.overlayTitle {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.button {
+  padding: 11px 26px;
+  border: none;
+  border-radius: 999px;
+  background: var(--spark);
+  color: #26200c;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.button:hover {
+  filter: brightness(1.08);
+}
+
+.progress {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: min(92vw, 420px);
+}
+
+.progressTrack {
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(145, 184, 215, 0.14);
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--accent), var(--spark));
+  transition: width 0.2s ease-out;
+}
+
+.progressLabel {
+  align-self: center;
+  font-size: 0.8rem;
+  color: #7f93af;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .progressFill {
+    transition: none;
+  }
+
+  .eye {
+    animation: none;
+  }
+
+  .pupil {
+    transition: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wire {
+    transition: none;
+  }
+}
