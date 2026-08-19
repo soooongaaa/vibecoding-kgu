@@ -1,6 +1,7 @@
 "use client";
 
 import { CATEGORIES, PRODUCTS } from "./data";
+import { ProductIcon } from "./ProductIcon";
 import styles from "./ShelfGame.module.css";
 
 export function ShelfGame() {
@@ -19,7 +20,8 @@ export function ShelfGame() {
       <section className={styles.tray}>
         {PRODUCTS.map((product) => (
           <div key={product.id} className={styles.productChip}>
-            {product.name}
+            <ProductIcon product={product} />
+            <span className={styles.productName}>{product.name}</span>
           </div>
         ))}
       </section>
