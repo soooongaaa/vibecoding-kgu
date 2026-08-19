@@ -211,6 +211,35 @@ src/
 - 공통 파일, 전역 CSS, 패키지 설정을 바꿔야 하면 먼저 팀장과 합의합니다.
 - 이미지·효과음 등 게임 전용 파일도 각 게임 폴더 안에 둡니다.
 
+### 12지신 게임 연결 주소
+
+메인 화면의 동물 버튼은 아래 주소로 연결됩니다. 담당자는 배정된 동물의 주소와 영문 slug를 그대로 사용합니다.
+
+| 순서 | 동물 | slug | 게임 주소 |
+| --- | --- | --- | --- |
+| 1 | 🐭 쥐 | `rat` | `/games/rat` |
+| 2 | 🐮 소 | `ox` | `/games/ox` |
+| 3 | 🐯 호랑이 | `tiger` | `/games/tiger` |
+| 4 | 🐰 토끼 | `rabbit` | `/games/rabbit` |
+| 5 | 🐲 용 | `dragon` | `/games/dragon` |
+| 6 | 🐍 뱀 | `snake` | `/games/snake` |
+| 7 | 🐴 말 | `horse` | `/games/horse` |
+| 8 | 🐑 양 | `sheep` | `/games/sheep` |
+| 9 | 🐵 원숭이 | `monkey` | `/games/monkey` |
+| 10 | 🐔 닭 | `rooster` | `/games/rooster` |
+| 11 | 🐶 개 | `dog` | `/games/dog` |
+| 12 | 🐷 돼지 | `pig` | `/games/pig` |
+
+게임 로직과 `SPEC.md`는 `src/games/<slug>/`에 두고, 실제 화면 진입 파일은 `src/app/games/<slug>/page.tsx`로 만듭니다. 예를 들어 쥐 게임은 다음 구조를 사용합니다.
+
+```text
+src/games/rat/SPEC.md
+src/games/rat/...
+src/app/games/rat/page.tsx
+```
+
+현재 공통 동적 경로에는 준비 중 화면이 표시됩니다. 각 동물의 정적 `page.tsx`가 병합되면 같은 버튼이 완성된 게임으로 연결됩니다.
+
 ### 공통 틀을 먼저 만들기
 
 여러 게임이 동시에 공통 코드를 만들면 충돌하기 쉽습니다. 한 명이 먼저 `feature/game-common` 브랜치에서 아래 공통 틀을 만들고 `dev`에 병합합니다. 나머지 팀원은 병합된 최신 `dev`에서 게임 브랜치를 시작합니다.
