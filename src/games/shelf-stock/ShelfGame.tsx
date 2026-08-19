@@ -16,6 +16,7 @@ export function ShelfGame() {
     attemptPlace,
     feedback,
     isComplete,
+    restart,
   } = useShelfGame();
 
   return (
@@ -24,6 +25,14 @@ export function ShelfGame() {
       {isComplete && (
         <p className={styles.completeBanner}>완료!</p>
       )}
+
+      <button
+        type="button"
+        className={styles.restartButton}
+        onClick={restart}
+      >
+        다시하기
+      </button>
 
       <section className={styles.categories}>
         {categories.map((category) => (

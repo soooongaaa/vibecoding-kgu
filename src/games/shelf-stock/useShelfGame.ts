@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { CATEGORIES, PRODUCTS } from "./data";
 import type { CategoryId, Product } from "./types";
+import { shuffle } from "./shuffle";
 
 interface DragState {
   productId: string;
@@ -17,7 +18,7 @@ interface Feedback {
 
 export function useShelfGame() {
   const [trayIds, setTrayIds] = useState<string[]>(() =>
-    PRODUCTS.map((p) => p.id)
+    shuffle(PRODUCTS.map((p) => p.id))
   );
   const [placed, setPlaced] = useState<Record<string, CategoryId>>({});
   const [dragging, setDragging] = useState<DragState | null>(null);
@@ -64,6 +65,13 @@ export function useShelfGame() {
 
   const isComplete = trayProducts.length === 0;
 
+  function restart() {
+    setTrayIds(shuffle(PRODUCTS.map((p) => p.id)));
+    setPlaced({});
+    setDragging(null);
+    setFeedback(null);
+  }
+
   return {
     categories: CATEGORIES,
     trayProducts,
@@ -74,5 +82,6 @@ export function useShelfGame() {
     attemptPlace,
     feedback,
     isComplete,
+    restart,
   };
 }

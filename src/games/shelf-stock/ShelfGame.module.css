@@ -83,3 +83,13 @@
   font-weight: 700;
   color: #2e9e44;
 }
+
+.restartButton {
+  align-self: center;
+  padding: 8px 20px;
+  border-radius: 8px;
+  border: none;
+  background: #333;
+  color: #fff;
+  font-size: 1rem;
+}
