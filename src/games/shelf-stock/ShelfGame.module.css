@@ -76,3 +76,10 @@
 .feedbackWrong {
   outline: 3px solid #d9534f;
 }
+
+.completeBanner {
+  text-align: center;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #2e9e44;
+}

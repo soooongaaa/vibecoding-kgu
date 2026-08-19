@@ -15,11 +15,15 @@ export function ShelfGame() {
     moveDrag,
     attemptPlace,
     feedback,
+    isComplete,
   } = useShelfGame();
 
   return (
     <main className={styles.page}>
       <h1 className={styles.title}>편의점 상품 진열</h1>
+      {isComplete && (
+        <p className={styles.completeBanner}>완료!</p>
+      )}
 
       <section className={styles.categories}>
         {categories.map((category) => (

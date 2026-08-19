@@ -62,6 +62,8 @@ export function useShelfGame() {
     }
   }
 
+  const isComplete = trayProducts.length === 0;
+
   return {
     categories: CATEGORIES,
     trayProducts,
@@ -71,5 +73,6 @@ export function useShelfGame() {
     moveDrag,
     attemptPlace,
     feedback,
+    isComplete,
   };
 }
