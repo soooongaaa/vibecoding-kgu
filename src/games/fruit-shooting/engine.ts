@@ -1,10 +1,12 @@
-export type ClayTarget = {
-  id: number;
+export type FruitKind = "apple" | "orange" | "grape" | "strawberry" | "banana";
+
+export type FruitTarget = {
   x: number;
   y: number;
   vx: number;
   vy: number;
   radius: number;
+  fruit: FruitKind;
 };
 
 export const CANVAS_WIDTH = 900;
@@ -20,38 +22,52 @@ const TARGET_RADIUS = 24;
 const GROUND_Y = CANVAS_HEIGHT - 20;
 const LEFT_SPAWN_X = 100;
 const RIGHT_SPAWN_X = CANVAS_WIDTH - 100;
+const REFERENCE_FRAME_MS = 1000 / 60;
 
-export function createClayPair(nextId: number): ClayTarget[] {
+const FRUIT_KINDS: FruitKind[] = [
+  "apple",
+  "orange",
+  "grape",
+  "strawberry",
+  "banana",
+];
+
+function randomFruit(): FruitKind {
+  return FRUIT_KINDS[Math.floor(Math.random() * FRUIT_KINDS.length)];
+}
+
+export function createFruitPair(): FruitTarget[] {
   return [
     {
-      id: nextId,
       x: LEFT_SPAWN_X,
       y: GROUND_Y,
       vx: LAUNCH_VX,
       vy: LAUNCH_VY,
       radius: TARGET_RADIUS,
+      fruit: randomFruit(),
     },
     {
-      id: nextId + 1,
       x: RIGHT_SPAWN_X,
       y: GROUND_Y,
       vx: -LAUNCH_VX,
       vy: LAUNCH_VY,
       radius: TARGET_RADIUS,
+      fruit: randomFruit(),
     },
   ];
 }
 
-export function stepTarget(target: ClayTarget): ClayTarget {
+export function stepTarget(target: FruitTarget, deltaMs: number): FruitTarget {
+  const dt = deltaMs / REFERENCE_FRAME_MS;
   return {
     ...target,
-    x: target.x + target.vx,
-    y: target.y + target.vy,
-    vy: target.vy + GRAVITY,
+    x: target.x + target.vx * dt,
+    y: target.y + target.vy * dt,
+    vy: target.vy + GRAVITY * dt,
   };
 }
 
-export function isOffscreen(target: ClayTarget): boolean {
+export function isOffscreen(target: FruitTarget): boolean {
   return (
     target.y - target.radius > CANVAS_HEIGHT ||
     target.x + target.radius < 0 ||
@@ -60,7 +76,7 @@ export function isOffscreen(target: ClayTarget): boolean {
 }
 
 export function isHit(
-  target: ClayTarget,
+  target: FruitTarget,
   pointX: number,
   pointY: number,
 ): boolean {

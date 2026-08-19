@@ -1,15 +1,16 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import styles from "./ClayShooting.module.css";
+import styles from "./FruitShooting.module.css";
 import {
   CANVAS_WIDTH,
   CANVAS_HEIGHT,
   GAME_DURATION_MS,
   SPAWN_INTERVAL_MS,
   PASS_THRESHOLD,
-  type ClayTarget,
-  createClayPair,
+  type FruitKind,
+  type FruitTarget,
+  createFruitPair,
   stepTarget,
   isOffscreen,
   isHit,
@@ -18,29 +19,80 @@ import {
 
 type Phase = "ready" | "playing" | "cleared" | "failed";
 
-export default function ClayShooting() {
+type Particle = {
+  x: number;
+  y: number;
+  vx: number;
+  vy: number;
+  life: number;
+  color: string;
+};
+
+const FRAME_MS = 1000 / 60;
+const MAX_FRAME_DELTA_MS = 100;
+const PARTICLES_PER_HIT = 6;
+const PARTICLE_LIFE_DECAY_PER_FRAME = 0.04;
+
+const FRUIT_EMOJI: Record<FruitKind, string> = {
+  apple: "🍎",
+  orange: "🍊",
+  grape: "🍇",
+  strawberry: "🍓",
+  banana: "🍌",
+};
+
+const FRUIT_JUICE_COLOR: Record<FruitKind, string> = {
+  apple: "#ef4444",
+  orange: "#f97316",
+  grape: "#a855f7",
+  strawberry: "#f43f5e",
+  banana: "#facc15",
+};
+
+function spawnParticles(x: number, y: number, color: string): Particle[] {
+  const particles: Particle[] = [];
+  for (let i = 0; i < PARTICLES_PER_HIT; i++) {
+    const angle = (i / PARTICLES_PER_HIT) * Math.PI * 2 + Math.random() * 0.5;
+    const speed = 2 + Math.random() * 2;
+    particles.push({
+      x,
+      y,
+      vx: Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed,
+      life: 1,
+      color,
+    });
+  }
+  return particles;
+}
+
+export default function FruitShooting() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [phase, setPhase] = useState<Phase>("ready");
   const [hitCount, setHitCount] = useState(0);
-  const [remainingMs, setRemainingMs] = useState(GAME_DURATION_MS);
+  const [remainingSeconds, setRemainingSeconds] = useState(
+    Math.ceil(GAME_DURATION_MS / 1000),
+  );
 
   const phaseRef = useRef<Phase>("ready");
-  const targetsRef = useRef<ClayTarget[]>([]);
-  const nextIdRef = useRef(0);
+  const targetsRef = useRef<FruitTarget[]>([]);
+  const particlesRef = useRef<Particle[]>([]);
   const hitCountRef = useRef(0);
   const elapsedRef = useRef(0);
-  const lastSpawnRef = useRef(0);
+  const lastSpawnRef = useRef(-SPAWN_INTERVAL_MS);
   const lastFrameTimeRef = useRef<number | null>(null);
+  const lastEmittedSecondsRef = useRef(Math.ceil(GAME_DURATION_MS / 1000));
 
   const resetGame = useCallback(() => {
     targetsRef.current = [];
-    nextIdRef.current = 0;
+    particlesRef.current = [];
     hitCountRef.current = 0;
     elapsedRef.current = 0;
-    lastSpawnRef.current = 0;
+    lastSpawnRef.current = -SPAWN_INTERVAL_MS;
     lastFrameTimeRef.current = null;
+    lastEmittedSecondsRef.current = Math.ceil(GAME_DURATION_MS / 1000);
     setHitCount(0);
-    setRemainingMs(GAME_DURATION_MS);
+    setRemainingSeconds(Math.ceil(GAME_DURATION_MS / 1000));
   }, []);
 
   const startGame = useCallback(() => {
@@ -65,7 +117,14 @@ export default function ClayShooting() {
     );
     if (hitIndex === -1) return;
 
-    targets.splice(hitIndex, 1);
+    const [hitTarget] = targets.splice(hitIndex, 1);
+    particlesRef.current.push(
+      ...spawnParticles(
+        hitTarget.x,
+        hitTarget.y,
+        FRUIT_JUICE_COLOR[hitTarget.fruit],
+      ),
+    );
     hitCountRef.current += 1;
     setHitCount(hitCountRef.current);
   }, []);
@@ -94,15 +153,21 @@ export default function ClayShooting() {
       ctx.fillStyle = "#1e293b";
       ctx.fillRect(0, CANVAS_HEIGHT - 20, CANVAS_WIDTH, 20);
 
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
       for (const target of targetsRef.current) {
-        ctx.beginPath();
-        ctx.arc(target.x, target.y, target.radius, 0, Math.PI * 2);
-        ctx.fillStyle = "#f97316";
-        ctx.fill();
-        ctx.lineWidth = 3;
-        ctx.strokeStyle = "#7c2d12";
-        ctx.stroke();
+        ctx.font = `${target.radius * 2}px sans-serif`;
+        ctx.fillText(FRUIT_EMOJI[target.fruit], target.x, target.y);
       }
+
+      for (const particle of particlesRef.current) {
+        ctx.globalAlpha = Math.max(particle.life, 0);
+        ctx.beginPath();
+        ctx.arc(particle.x, particle.y, 3, 0, Math.PI * 2);
+        ctx.fillStyle = particle.color;
+        ctx.fill();
+      }
+      ctx.globalAlpha = 1;
     };
 
     const step = (time: number) => {
@@ -116,25 +181,49 @@ export default function ClayShooting() {
       if (lastFrameTimeRef.current === null) {
         lastFrameTimeRef.current = time;
       }
-      const delta = time - lastFrameTimeRef.current;
+      const delta = Math.min(
+        time - lastFrameTimeRef.current,
+        MAX_FRAME_DELTA_MS,
+      );
       lastFrameTimeRef.current = time;
+      const dt = delta / FRAME_MS;
 
       elapsedRef.current += delta;
-      setRemainingMs(Math.max(0, GAME_DURATION_MS - elapsedRef.current));
 
-      if (elapsedRef.current - lastSpawnRef.current >= SPAWN_INTERVAL_MS) {
+      const secondsLeft = Math.max(
+        0,
+        Math.ceil((GAME_DURATION_MS - elapsedRef.current) / 1000),
+      );
+      if (secondsLeft !== lastEmittedSecondsRef.current) {
+        lastEmittedSecondsRef.current = secondsLeft;
+        setRemainingSeconds(secondsLeft);
+      }
+
+      if (
+        elapsedRef.current < GAME_DURATION_MS &&
+        elapsedRef.current - lastSpawnRef.current >= SPAWN_INTERVAL_MS
+      ) {
         lastSpawnRef.current += SPAWN_INTERVAL_MS;
-        const pair = createClayPair(nextIdRef.current);
-        nextIdRef.current += 2;
-        targetsRef.current.push(...pair);
+        targetsRef.current.push(...createFruitPair());
       }
 
       targetsRef.current = targetsRef.current
-        .map(stepTarget)
+        .map((target) => stepTarget(target, delta))
         .filter((target) => !isOffscreen(target));
+
+      particlesRef.current = particlesRef.current
+        .map((particle) => ({
+          ...particle,
+          x: particle.x + particle.vx * dt,
+          y: particle.y + particle.vy * dt,
+          life: particle.life - PARTICLE_LIFE_DECAY_PER_FRAME * dt,
+        }))
+        .filter((particle) => particle.life > 0);
 
       if (elapsedRef.current >= GAME_DURATION_MS) {
         const cleared = isPass(hitCountRef.current);
+        targetsRef.current = [];
+        particlesRef.current = [];
         phaseRef.current = cleared ? "cleared" : "failed";
         setPhase(cleared ? "cleared" : "failed");
       }
@@ -147,11 +236,9 @@ export default function ClayShooting() {
     return () => cancelAnimationFrame(animationId);
   }, []);
 
-  const remainingSeconds = Math.ceil(remainingMs / 1000);
-
   return (
     <div className={styles.wrap}>
-      <h1 className={styles.title}>클레이 사격</h1>
+      <h1 className={styles.title}>과일 사격</h1>
 
       <div className={styles.hud}>
         <span>남은 시간: {remainingSeconds}초</span>
@@ -172,7 +259,7 @@ export default function ClayShooting() {
         {phase === "ready" && (
           <div className={styles.overlay}>
             <p>
-              화면을 클릭해서 날아오르는 클레이를 맞추세요.
+              칼 커서로 날아오르는 과일을 클릭해서 터뜨리세요.
               <br />
               60초 안에 {PASS_THRESHOLD}개 이상 명중하면 통과!
             </p>

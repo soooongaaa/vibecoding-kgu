@@ -522,3 +522,56 @@ Expected: `src/games/clay-shooting/`와 `src/app/games/clay-shooting/` 아래 �
 ## 완료 후
 
 이 계획의 모든 태스크가 끝나면 `feature/game-joyuni-a`에는 커밋된 변경사항만 있고 아직 push되지 않은 상태다. `dev`로의 PR 생성·push는 이 문서의 범위가 아니며, 팀 CLAUDE.md·`/game-finish` 규칙대로 **사용자에게 변경 요약과 테스트 결과를 보여주고 명시적 승인을 받은 뒤에만** 진행한다.
+
+---
+
+## Amendment (final-review fix wave + fruit reskin)
+
+원래 계획한 5개 태스크(engine.ts, CSS, 컴포넌트, 라우트, 검증)는 위 내용대로 구현되어 각각
+task-level review를 통과했다. 이후 전체 브랜치 최종 리뷰(opus 모델)에서 나온 지적과, 사용자의
+"클레이 대신 과일, 명중 시 과일이 터지는 효과, 마우스 커서를 칼로" 요청을 반영해 아래를 한 번에
+적용한다.
+
+### 리네임
+
+`clay-shooting` → `fruit-shooting` 전체 리네임 (폴더, 라우트, 컴포넌트명 `ClayShooting` →
+`FruitShooting`, 파일명 전부). `git mv`로 실행해 별도 커밋으로 분리, 이 커밋에는 리네임 외
+내용 변경을 섞지 않아 git이 100% rename으로 추적한다.
+
+### 최종 리뷰 반영 수정
+
+1. **명중 파편 효과 (Important #1)** — SPEC.md가 "파편 효과 후 제거"를 요구했지만 Task 3
+   코드에는 없었다(플랜이 스펙을 누락한 케이스, 태스크 단위 리뷰로는 잡을 수 없었음). 과일
+   버스트 이펙트로 구현: `particlesRef`에 `{x,y,vx,vy,life,color}` 배열을 두고, 명중 시 과일
+   종류에 맞는 즙 색으로 6개 파티클을 방사형으로 스폰, 매 프레임 이동·페이드 후 제거.
+2. **주사율 의존 물리 (Important #2)** — `stepTarget(target, deltaMs)`로 시그니처 변경,
+   내부에서 `deltaMs / (1000/60)`으로 정규화해 60Hz 기준 튜닝값(GRAVITY, LAUNCH_VY 등)을
+   그대로 유지하면서 다른 주사율에서도 동일한 실제 체공 시간을 보장한다. 이전에는 프레임당
+   고정량만큼 전진해서 144Hz에서는 클레이 체공 시간이 60Hz의 약 40%로 줄어 통과 난이도가
+   달라지는 문제가 있었다.
+3. **탭 전환 시 delta 폭주 (Important #3)** — 프레임 delta를 `Math.min(delta, 100)`으로
+   clamp. 백그라운드 탭에서 복귀할 때 남은 시간이 통째로 증발하거나 과일이 뭉쳐서 스폰되는
+   문제를 막는다.
+4. **죽은 코드 제거 (Minor #4)** — `id`/`nextIdRef` 체인 전부 삭제 (어디에서도 읽히지 않는
+   write-only 상태였음).
+5. **매 프레임 setState (Minor #5)** — 남은 시간을 정수 초로 변환해 값이 바뀔 때만
+   `setRemainingSeconds`를 호출하도록 변경 (이전에는 초당 약 60회 리렌더를 유발했음).
+6. **스폰/종료 경합 (Minor #6)** — `lastSpawnRef` 초기값을 `-SPAWN_INTERVAL_MS`로 시작해
+   0초에 즉시 첫 페어가 스폰되도록 하고, `elapsed < GAME_DURATION_MS` 가드로 60초 시점의
+   낭비 스폰(결과 화면에 바로 덮이는 스폰)을 제거했다 (스폰 스케줄이 0,3000,...,57000 총
+   20회로 이동, 여전히 40개 등장). 라운드 종료 전환 시 `targetsRef`/`particlesRef`를 비워
+   오버레이 뒤에 잔상이 남지 않도록 했다.
+7. Minor #7(모바일 히트 반경 — 24px 반지름이 작은 화면에서 손가락 대비 작을 수 있음)과
+   #8(SPEC의 engine.ts 분리 근거 중 "스폰 타이밍" 언급이 실제로는 컴포넌트에 남아있어 문서와
+   불일치)은 코드 정정이 아니라 UX 튜닝/문서 표현 문제라 이번 라운드에서는 보류한다.
+   SPEC.md는 이미 이번 리라이트에서 정확한 서술로 갱신했다.
+
+### 과일 리스킨
+
+- `engine.ts`에 `FruitKind`(apple/orange/grape/strawberry/banana) 타입을 추가하고
+  `ClayTarget` → `FruitTarget`(fruit 필드 추가)로 리네임, `createFruitPair()`에서 스폰마다
+  무작위 과일을 선택한다.
+- `FruitShooting.tsx`에서 과일은 이모지(`ctx.fillText`)로 그리고, 명중 파티클 색은 과일별
+  즙 색 매핑(`FRUIT_JUICE_COLOR`)을 사용한다.
+- `FruitShooting.module.css`의 `.canvas`에 인라인 SVG data URI 칼 커서를 추가했다 (외부
+  이미지 파일 없음, `crosshair`를 폴백으로 유지).
