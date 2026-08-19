@@ -1,0 +1,8 @@
+.page { --accent: #8ab96e; min-height: 100vh; display: grid; place-items: center; padding: 24px; background: radial-gradient(circle at 50% 28%, color-mix(in srgb, var(--accent) 30%, white), transparent 32%), #f3f4df; color: #2c4233; }
+.card { width: min(100%, 480px); border: 1px solid rgba(44, 66, 51, 0.14); border-radius: 30px; padding: 38px 30px; background: rgba(255, 255, 255, 0.76); text-align: center; box-shadow: 0 22px 60px rgba(44, 66, 51, 0.12); }
+.sign { display: inline-block; border-radius: 999px; padding: 6px 11px; background: var(--accent); color: white; font-size: 9px; font-weight: 900; letter-spacing: 0.12em; }
+.emoji { display: block; margin: 24px 0 10px; font-size: 86px; filter: drop-shadow(0 10px 9px rgba(44, 66, 51, 0.15)); }
+.card p { margin: 0; color: #738078; font-size: 13px; }
+.card h1 { margin: 5px 0 14px; font-size: 38px; letter-spacing: -0.06em; }
+.card .description { margin-bottom: 25px; line-height: 1.7; }
+.card a { display: block; border-radius: 13px; padding: 14px; background: #355b40; color: white; text-decoration: none; font-weight: 900; }
