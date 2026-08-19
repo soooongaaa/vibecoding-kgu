@@ -247,3 +247,24 @@ src/
 ### 팀원에게 그대로 보낼 안내문
 
 > 미니게임 하나당 브랜치 하나와 PR 하나를 사용합니다. 각자 미리 배정된 A/B 브랜치만 사용하고 새 브랜치를 임의로 만들지 마세요. A 브랜치에는 게임 하나, B 브랜치에는 다른 게임 하나만 구현하고, 원칙적으로 자기 게임 폴더만 수정해 주세요. 게임이 완성되면 해당 브랜치에 push한 뒤 `dev`로 PR을 만들고 직접 병합하지 마세요. `main`과 `dev`에는 절대 직접 push하지 않습니다.
+
+## Claude Code 팀 설정
+
+저장소에는 팀 공용 Claude Code 규칙과 보호 장치가 포함되어 있습니다.
+
+```text
+CLAUDE.md                         # Claude가 항상 읽는 프로젝트 규칙
+.claude/settings.json            # 팀 공용 Hook 설정
+.claude/hooks/                    # 위험한 Git 명령 차단
+.claude/skills/game-start/        # /game-start 명령
+.claude/skills/game-finish/       # /game-finish 명령
+```
+
+저장소 루트에서 Claude Code를 실행한 뒤 다음처럼 사용합니다.
+
+```text
+/game-start a memory
+/game-finish
+```
+
+처음 실행할 때 프로젝트 Hook 사용을 묻는 창이 나오면 저장소 내용을 확인한 뒤 허용합니다. Hook은 Claude Code가 `main`·`dev`에서 commit·push·merge하는 행위, force-push, hard reset 같은 위험한 Git 명령을 실행하기 전에 차단합니다. 팀원이 Claude Code 밖의 터미널에서 직접 입력하는 명령까지 차단하는 기능은 아니므로 GitHub 브랜치 보호 규칙도 함께 사용하는 것을 권장합니다.
