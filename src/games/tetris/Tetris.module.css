@@ -9,9 +9,26 @@
   color: #f8fafc;
 }
 
+.topBar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
 .title {
   margin: 0;
   font-size: 22px;
+}
+
+.muteButton {
+  border: 0;
+  border-radius: 999px;
+  width: 32px;
+  height: 32px;
+  background: #1e293b;
+  color: #f8fafc;
+  font-size: 14px;
+  cursor: pointer;
 }
 
 .hud {
@@ -21,10 +38,16 @@
   font-size: 14px;
 }
 
+.playArea {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
 .canvasBox {
   position: relative;
   width: 100%;
-  max-width: 240px;
+  max-width: 300px;
   aspect-ratio: 10 / 20;
 }
 
@@ -33,6 +56,50 @@
   height: 100%;
   display: block;
   border-radius: 8px;
+  border: 3px solid #475569;
+}
+
+.clearOverlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  background: rgba(15, 23, 42, 0.9);
+  border-radius: 8px;
+  text-align: center;
+  padding: 20px;
+}
+
+.clearTitle {
+  font-size: 52px;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  background: linear-gradient(120deg, #38bdf8, #4ade80, #facc15);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 0 18px rgba(56, 189, 248, 0.6));
+  animation: clearPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.clearSubtext {
+  font-size: 14px;
+  color: #e2e8f0;
+  font-weight: 600;
+}
+
+@keyframes clearPop {
+  from {
+    transform: scale(0.4);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 .overlay {
@@ -62,6 +129,37 @@
   color: #0f172a;
   font-weight: 700;
   cursor: pointer;
+}
+
+.nextBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding-top: 8px;
+}
+
+.nextLabel {
+  font-size: 12px;
+  color: #94a3b8;
+  font-weight: 700;
+}
+
+.nextGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 14px);
+  grid-template-rows: repeat(4, 14px);
+  gap: 2px;
+  background: #1e293b;
+  border: 2px solid #475569;
+  border-radius: 6px;
+  padding: 4px;
+}
+
+.nextCell {
+  width: 14px;
+  height: 14px;
+  border-radius: 2px;
 }
 
 .touchControls {
