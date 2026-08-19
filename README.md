@@ -1,6 +1,6 @@
 # vibecoding-kgu
 
-경기대학교 바이브코딩 프로젝트. Next.js(App Router) + Supabase + Vercel 배포.
+경기대학교 바이브코딩 팀 프로젝트입니다. Next.js App Router와 Supabase 인증을 사용합니다.
 
 **배포 주소: https://vibecoding-kgu.vercel.app**
 
@@ -39,19 +39,23 @@ npx supabase link --project-ref <project-ref>
 npx supabase db push
 ```
 
-현재 테이블:
-
-- `public.messages` — `id`, `content`, `created_at`. RLS 켜져 있고 익명 읽기/쓰기 허용(공개 데모용). 인증을 붙이면 정책을 교체해야 합니다.
+Supabase Authentication에서 이메일 로그인을 활성화하고, URL 설정에 로컬 및 Vercel 콜백 주소를 등록해야 합니다.
 
 ## 구조
 
 ```
-src/
-  app/
-    page.tsx        # DB 연결 확인 + 메시지 목록/작성
-    actions.ts      # 서버 액션 (메시지 저장)
-  lib/supabase/
-    server.ts       # 서버 컴포넌트용 클라이언트
-    client.ts       # 클라이언트 컴포넌트용 클라이언트
-supabase/migrations/  # SQL 마이그레이션
+src/app/login/           # 로그인·회원가입 화면
+src/app/auth/callback/   # 이메일 인증 콜백
+src/lib/supabase/        # 브라우저·서버 Supabase 클라이언트
+docs/MAIN.md             # main 브랜치 규칙
+docs/DEV.md              # dev 브랜치 규칙
+docs/FEATURE.md          # feature 브랜치 규칙
 ```
+
+## 협업 흐름
+
+```text
+feature/작업명-이름 → dev → main
+```
+
+`main`과 `dev`에는 직접 push하지 않습니다. 자세한 규칙은 `docs/` 문서를 먼저 읽어 주세요.
