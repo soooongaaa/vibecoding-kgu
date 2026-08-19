@@ -112,3 +112,159 @@ git push -u origin feature/작업명-이름
 - 담당 기능의 핵심 흐름을 직접 확인했다.
 - PR 설명에 변경 파일과 테스트 결과를 작성했다.
 - 팀장이 `dev`에서 통합 확인한 뒤에만 `main`에 병합한다.
+
+## 12개 미니게임 협업 규칙
+
+6명이 각자 미니게임 2개를 담당합니다. 충돌과 되돌리기 문제를 줄이기 위해 **게임 1개 = 브랜치 1개 = PR 1개**를 원칙으로 합니다.
+
+### 전체 GitHub 관리 구조
+
+Git 브랜치는 실제 폴더처럼 `main` 아래에 `dev`, `dev` 아래에 게임 브랜치가 들어가는 구조는 아닙니다. 모든 브랜치는 나란히 존재하며, **어디에서 시작하고 어디로 병합하는지**로 역할을 구분합니다.
+
+```text
+feature/game-*-a ─┐
+feature/game-*-b ─┤
+나머지 게임 브랜치 ├── PR → dev ── 전체 테스트 ── PR → main ── Vercel 배포
+                  ┘
+```
+
+관리 원칙은 다음과 같습니다.
+
+1. 12개 게임 브랜치는 `dev`의 코드를 기준으로 시작합니다.
+2. 팀원은 배정된 게임 브랜치에만 commit·push합니다.
+3. 완성된 게임은 `게임 브랜치 → dev` PR로 하나씩 모읍니다.
+4. 팀장이 PR을 확인한 뒤에만 `dev`에 병합합니다.
+5. 12개 게임이 모이면 `dev`에서 전체 실행·충돌·빌드를 테스트합니다.
+6. 최종 확인 후 팀장이 `dev → main` PR을 병합합니다.
+7. `main`에 병합되면 Vercel 프로덕션 배포가 진행됩니다.
+
+게임 브랜치를 `main`에 바로 병합하지 않습니다. 팀원도 `dev` 또는 `main`에 직접 push하지 않습니다.
+
+### 전체 흐름
+
+```text
+최신 dev
+├── feature/game-memory-minsu → dev PR
+├── feature/game-quiz-minsu   → dev PR
+├── feature/game-puzzle-jiyun → dev PR
+└── ...                       → dev PR
+
+검증이 끝난 dev → main PR → Vercel 배포
+```
+
+- 두 게임을 맡았더라도 하나의 브랜치에 같이 넣지 않습니다.
+- 게임 A는 배정된 A 브랜치, 게임 B는 배정된 B 브랜치에서 각각 작업합니다.
+- 두 브랜치를 서로 병합하거나 한 게임의 코드를 다른 게임 브랜치에 섞지 않습니다.
+- 팀원은 자기 feature 브랜치에만 push합니다. `dev`와 `main`에는 직접 push하거나 직접 병합하지 않습니다.
+
+### 배정된 브랜치
+
+팀장이 최신 `dev`를 기준으로 아래 12개 브랜치를 미리 만들어 두었습니다. A와 B에는 회의에서 정한 서로 다른 게임을 하나씩 구현합니다.
+
+| 담당자 | 게임 A 브랜치 | 게임 B 브랜치 |
+| --- | --- | --- |
+| `soooongaaa` | `feature/game-soooongaaa-a` | `feature/game-soooongaaa-b` |
+| `dbqp8009@gmail.com` | `feature/game-dbqp8009-a` | `feature/game-dbqp8009-b` |
+| `woojoo22kr@gmail.com` | `feature/game-woojoo22kr-a` | `feature/game-woojoo22kr-b` |
+| `joyuni@kyonggi.ac.kr` | `feature/game-joyuni-a` | `feature/game-joyuni-b` |
+| `catherine0427@kyonggi.ac.kr` | `feature/game-catherine0427-a` | `feature/game-catherine0427-b` |
+| `rushsis2203@gmail.com` | `feature/game-rushsis2203-a` | `feature/game-rushsis2203-b` |
+
+### 게임 작업 시작하기
+
+저장소를 처음 받은 뒤 자기에게 배정된 기존 브랜치로 이동합니다. 새 브랜치를 임의로 만들지 않습니다.
+
+```bash
+git fetch origin
+git switch --track origin/feature/game-아이디-a
+```
+
+이미 로컬 브랜치가 만들어져 있다면 `git switch feature/game-아이디-a`만 실행합니다.
+
+작업 중에는 자주 저장합니다.
+
+```bash
+git add .
+git commit -m "feat: 게임명 미니게임 구현"
+git push origin feature/game-아이디-a
+```
+
+완성되면 GitHub에서 `feature/game-아이디-a → dev` PR을 만들고 팀장에게 알립니다. PR을 직접 병합하지 않습니다. 게임 B도 같은 방식으로 배정된 B 브랜치에서 별도로 작업합니다.
+
+### 폴더와 수정 범위
+
+각 게임은 자기 폴더 안에 독립적으로 만듭니다.
+
+```text
+src/
+├── games/
+│   ├── memory/
+│   ├── quiz/
+│   ├── puzzle/
+│   └── rhythm/
+├── components/game/   # 게임 공통 UI
+└── lib/game/          # 게임 공통 타입·도구
+```
+
+- 담당자는 원칙적으로 `src/games/자기-게임명/`만 수정합니다.
+- 다른 사람의 게임 폴더는 수정하지 않습니다.
+- 공통 파일, 전역 CSS, 패키지 설정을 바꿔야 하면 먼저 팀장과 합의합니다.
+- 이미지·효과음 등 게임 전용 파일도 각 게임 폴더 안에 둡니다.
+
+### 공통 틀을 먼저 만들기
+
+여러 게임이 동시에 공통 코드를 만들면 충돌하기 쉽습니다. 한 명이 먼저 `feature/game-common` 브랜치에서 아래 공통 틀을 만들고 `dev`에 병합합니다. 나머지 팀원은 병합된 최신 `dev`에서 게임 브랜치를 시작합니다.
+
+- 게임 화면 공통 레이아웃
+- 시작·다시 하기 버튼
+- 타이머와 점수 표시
+- 결과 모달
+- 게임 목록과 게임 정보 타입
+- 게임 종료 시 점수·결과를 전달하는 방식
+
+공통 틀이 병합된 뒤에는 각 게임이 제멋대로 별도 규칙을 만들지 않고 기존 틀을 사용합니다.
+
+### 게임 하나의 최소 완료 기준
+
+- 해당 게임 주소에 접속할 수 있다.
+- 시작 → 플레이 → 종료 → 다시 하기 흐름이 동작한다.
+- 점수 또는 성공·실패 결과가 표시된다.
+- 모바일 화면에서도 조작할 수 있다.
+- 브라우저 콘솔에 치명적인 오류가 없다.
+- `npm run lint`와 `npm run build`가 통과한다.
+- 담당 게임 외의 불필요한 파일을 수정하지 않았다.
+- PR에 게임 설명, 실행 방법, 테스트 결과, 화면 캡처를 적었다.
+
+### 병합 순서
+
+1. `feature/game-common → dev`를 먼저 병합합니다.
+2. 완성된 게임부터 하나씩 `feature/game-* → dev` PR로 병합합니다.
+3. PR 하나를 병합할 때마다 `dev`에서 실행과 빌드를 확인합니다.
+4. 문제가 생기면 다음 게임을 병합하기 전에 해결합니다.
+5. 12개 게임 통합 테스트가 끝나면 팀장이 `dev → main` PR을 병합합니다.
+6. GitHub가 `dev`를 삭제하라고 표시해도 삭제하지 않습니다. `dev`는 계속 사용하는 통합 브랜치입니다.
+
+### 팀원에게 그대로 보낼 안내문
+
+> 미니게임 하나당 브랜치 하나와 PR 하나를 사용합니다. 각자 미리 배정된 A/B 브랜치만 사용하고 새 브랜치를 임의로 만들지 마세요. A 브랜치에는 게임 하나, B 브랜치에는 다른 게임 하나만 구현하고, 원칙적으로 자기 게임 폴더만 수정해 주세요. 게임이 완성되면 해당 브랜치에 push한 뒤 `dev`로 PR을 만들고 직접 병합하지 마세요. `main`과 `dev`에는 절대 직접 push하지 않습니다.
+
+## Claude Code 팀 설정
+
+저장소에는 팀 공용 Claude Code 규칙과 보호 장치가 포함되어 있습니다.
+
+```text
+CLAUDE.md                         # Claude가 항상 읽는 프로젝트 규칙
+.claude/settings.json            # 팀 공용 Hook 설정
+.claude/hooks/                    # 위험한 Git 명령 차단
+.claude/skills/game-start/        # /game-start 명령
+.claude/skills/game-finish/       # /game-finish 명령
+```
+
+저장소 루트에서 Claude Code를 실행한 뒤 다음처럼 사용합니다.
+
+```text
+/game-start a memory
+/game-finish
+```
+
+처음 실행할 때 프로젝트 Hook 사용을 묻는 창이 나오면 저장소 내용을 확인한 뒤 허용합니다. Hook은 Claude Code가 `main`·`dev`에서 commit·push·merge하는 행위, force-push, hard reset 같은 위험한 Git 명령을 실행하기 전에 차단합니다. 팀원이 Claude Code 밖의 터미널에서 직접 입력하는 명령까지 차단하는 기능은 아니므로 GitHub 브랜치 보호 규칙도 함께 사용하는 것을 권장합니다.
