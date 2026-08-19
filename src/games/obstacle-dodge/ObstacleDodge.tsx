@@ -59,6 +59,7 @@ function roundRectPath(
 
 export default function ObstacleDodge() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const progressFillRef = useRef<HTMLDivElement | null>(null);
   const [phase, setPhase] = useState<Phase>("ready");
   const [remainingSeconds, setRemainingSeconds] = useState(GAME_DURATION_SEC);
   const [survivedSeconds, setSurvivedSeconds] = useState(0);
@@ -243,6 +244,11 @@ export default function ObstacleDodge() {
       const deltaSec = deltaMs / 1000;
       elapsedSecRef.current += deltaSec;
 
+      const progressRatio = Math.min(elapsedSecRef.current / GAME_DURATION_SEC, 1);
+      if (progressFillRef.current) {
+        progressFillRef.current.style.width = `${(1 - progressRatio) * 100}%`;
+      }
+
       const targetX = laneCenterX(laneIndexRef.current);
       carXRef.current +=
         (targetX - carXRef.current) * Math.min(1, CAR_LANE_MOVE_SPEED * deltaSec);
@@ -311,11 +317,6 @@ export default function ObstacleDodge() {
     return () => cancelAnimationFrame(animationId);
   }, []);
 
-  const progressRatio = Math.min(
-    (GAME_DURATION_SEC - remainingSeconds) / GAME_DURATION_SEC,
-    1,
-  );
-
   return (
     <div className={styles.wrap}>
       <div className={styles.canvasBox}>
@@ -323,10 +324,7 @@ export default function ObstacleDodge() {
           <div className={styles.hud}>
             <div className={styles.hudTimeText}>남은 시간: {remainingSeconds}초</div>
             <div className={styles.progressTrack}>
-              <div
-                className={styles.progressFill}
-                style={{ width: `${(1 - progressRatio) * 100}%` }}
-              />
+              <div ref={progressFillRef} className={styles.progressFill} />
             </div>
           </div>
         )}
