@@ -130,43 +130,43 @@ git push -u origin feature/작업명-이름
 ```
 
 - 두 게임을 맡았더라도 하나의 브랜치에 같이 넣지 않습니다.
-- 첫 번째 게임을 끝낸 뒤 두 번째 게임은 **다시 최신 `dev`에서** 새 브랜치를 만듭니다.
-- 첫 번째 게임 브랜치에서 두 번째 게임 브랜치를 만들거나 기존 브랜치를 재사용하지 않습니다.
+- 게임 A는 배정된 A 브랜치, 게임 B는 배정된 B 브랜치에서 각각 작업합니다.
+- 두 브랜치를 서로 병합하거나 한 게임의 코드를 다른 게임 브랜치에 섞지 않습니다.
 - 팀원은 자기 feature 브랜치에만 push합니다. `dev`와 `main`에는 직접 push하거나 직접 병합하지 않습니다.
 
-### 브랜치 이름
+### 배정된 브랜치
 
-```text
-feature/game-게임명-담당자
-```
+팀장이 최신 `dev`를 기준으로 아래 12개 브랜치를 미리 만들어 두었습니다. A와 B에는 회의에서 정한 서로 다른 게임을 하나씩 구현합니다.
 
-영문 소문자와 하이픈을 사용합니다.
-
-```text
-feature/game-memory-woojoo
-feature/game-quiz-woojoo
-feature/game-puzzle-jiyun
-```
+| 담당자 | 게임 A 브랜치 | 게임 B 브랜치 |
+| --- | --- | --- |
+| `soooongaaa` | `feature/game-soooongaaa-a` | `feature/game-soooongaaa-b` |
+| `dbqp8009@gmail.com` | `feature/game-dbqp8009-a` | `feature/game-dbqp8009-b` |
+| `woojoo22kr@gmail.com` | `feature/game-woojoo22kr-a` | `feature/game-woojoo22kr-b` |
+| `joyuni@kyonggi.ac.kr` | `feature/game-joyuni-a` | `feature/game-joyuni-b` |
+| `catherine0427@kyonggi.ac.kr` | `feature/game-catherine0427-a` | `feature/game-catherine0427-b` |
+| `rushsis2203@gmail.com` | `feature/game-rushsis2203-a` | `feature/game-rushsis2203-b` |
 
 ### 게임 작업 시작하기
 
-게임마다 아래 명령을 새로 실행합니다.
+저장소를 처음 받은 뒤 자기에게 배정된 기존 브랜치로 이동합니다. 새 브랜치를 임의로 만들지 않습니다.
 
 ```bash
-git switch dev
-git pull origin dev
-git switch -c feature/game-게임명-이름
+git fetch origin
+git switch --track origin/feature/game-아이디-a
 ```
+
+이미 로컬 브랜치가 만들어져 있다면 `git switch feature/game-아이디-a`만 실행합니다.
 
 작업 중에는 자주 저장합니다.
 
 ```bash
 git add .
 git commit -m "feat: 게임명 미니게임 구현"
-git push -u origin feature/game-게임명-이름
+git push origin feature/game-아이디-a
 ```
 
-완성되면 GitHub에서 `feature/game-게임명-이름 → dev` PR을 만들고 팀장에게 알립니다. PR을 직접 병합하지 않습니다.
+완성되면 GitHub에서 `feature/game-아이디-a → dev` PR을 만들고 팀장에게 알립니다. PR을 직접 병합하지 않습니다. 게임 B도 같은 방식으로 배정된 B 브랜치에서 별도로 작업합니다.
 
 ### 폴더와 수정 범위
 
@@ -223,4 +223,4 @@ src/
 
 ### 팀원에게 그대로 보낼 안내문
 
-> 미니게임 하나당 브랜치 하나와 PR 하나를 사용합니다. 항상 최신 `dev`에서 `feature/game-게임명-이름` 브랜치를 만들고, 원칙적으로 자기 게임 폴더만 수정해 주세요. 게임이 완성되면 자기 브랜치에 push한 뒤 `dev`로 PR을 만들고 직접 병합하지 마세요. 두 번째 게임은 첫 번째 브랜치를 재사용하지 말고 최신 `dev`에서 새 브랜치를 만들어 주세요. `main`과 `dev`에는 절대 직접 push하지 않습니다.
+> 미니게임 하나당 브랜치 하나와 PR 하나를 사용합니다. 각자 미리 배정된 A/B 브랜치만 사용하고 새 브랜치를 임의로 만들지 마세요. A 브랜치에는 게임 하나, B 브랜치에는 다른 게임 하나만 구현하고, 원칙적으로 자기 게임 폴더만 수정해 주세요. 게임이 완성되면 해당 브랜치에 push한 뒤 `dev`로 PR을 만들고 직접 병합하지 마세요. `main`과 `dev`에는 절대 직접 push하지 않습니다.
