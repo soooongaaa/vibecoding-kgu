@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { PRODUCTS } from "./data";
+import { CATEGORIES, PRODUCTS } from "./data";
+import type { CategoryId, Product } from "./types";
 
 interface DragState {
   productId: string;
@@ -9,13 +10,32 @@ interface DragState {
   y: number;
 }
 
-export function useShelfGame() {
-  const [trayIds] = useState<string[]>(() => PRODUCTS.map((p) => p.id));
-  const [dragging, setDragging] = useState<DragState | null>(null);
+interface Feedback {
+  productId: string;
+  correct: boolean;
+}
 
-  const trayProducts = trayIds.map(
-    (id) => PRODUCTS.find((p) => p.id === id)!
+export function useShelfGame() {
+  const [trayIds, setTrayIds] = useState<string[]>(() =>
+    PRODUCTS.map((p) => p.id)
   );
+  const [placed, setPlaced] = useState<Record<string, CategoryId>>({});
+  const [dragging, setDragging] = useState<DragState | null>(null);
+  const [feedback, setFeedback] = useState<Feedback | null>(null);
+
+  const productById = new Map(PRODUCTS.map((p) => [p.id, p]));
+
+  const trayProducts: Product[] = trayIds.map((id) => productById.get(id)!);
+
+  const placedByCategory: Record<CategoryId, Product[]> = {
+    beverage: [],
+    snack: [],
+    noodle: [],
+    daily: [],
+  };
+  for (const [productId, categoryId] of Object.entries(placed)) {
+    placedByCategory[categoryId].push(productById.get(productId)!);
+  }
 
   function startDrag(productId: string, x: number, y: number) {
     setDragging({ productId, x, y });
@@ -25,9 +45,31 @@ export function useShelfGame() {
     setDragging((prev) => (prev ? { ...prev, x, y } : prev));
   }
 
-  function endDrag() {
+  function attemptPlace(productId: string, categoryId: CategoryId | null) {
     setDragging(null);
+    if (!categoryId) return;
+
+    const product = productById.get(productId);
+    if (!product) return;
+
+    const correct = product.categoryId === categoryId;
+    setFeedback({ productId, correct });
+    window.setTimeout(() => setFeedback(null), 400);
+
+    if (correct) {
+      setTrayIds((prev) => prev.filter((id) => id !== productId));
+      setPlaced((prev) => ({ ...prev, [productId]: categoryId }));
+    }
   }
 
-  return { trayProducts, dragging, startDrag, moveDrag, endDrag };
+  return {
+    categories: CATEGORIES,
+    trayProducts,
+    placedByCategory,
+    dragging,
+    startDrag,
+    moveDrag,
+    attemptPlace,
+    feedback,
+  };
 }

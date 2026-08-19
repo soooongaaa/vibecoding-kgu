@@ -1,26 +1,39 @@
 "use client";
 
-import { CATEGORIES } from "./data";
 import { ProductIcon } from "./ProductIcon";
 import { useShelfGame } from "./useShelfGame";
+import type { CategoryId } from "./types";
 import styles from "./ShelfGame.module.css";
 
 export function ShelfGame() {
-  const { trayProducts, dragging, startDrag, moveDrag, endDrag } =
-    useShelfGame();
+  const {
+    categories,
+    trayProducts,
+    placedByCategory,
+    dragging,
+    startDrag,
+    moveDrag,
+    attemptPlace,
+    feedback,
+  } = useShelfGame();
 
   return (
     <main className={styles.page}>
       <h1 className={styles.title}>편의점 상품 진열</h1>
 
       <section className={styles.categories}>
-        {CATEGORIES.map((category) => (
+        {categories.map((category) => (
           <div
             key={category.id}
             data-category-id={category.id}
             className={styles.categoryBox}
           >
             <h2 className={styles.categoryLabel}>{category.label}</h2>
+            <div className={styles.placedRow}>
+              {placedByCategory[category.id].map((product) => (
+                <ProductIcon key={product.id} product={product} />
+              ))}
+            </div>
           </div>
         ))}
       </section>
@@ -31,7 +44,15 @@ export function ShelfGame() {
           return (
             <div
               key={product.id}
-              className={`${styles.productChip} ${isDragging ? styles.dragging : ""}`}
+              className={`${styles.productChip} ${
+                isDragging ? styles.dragging : ""
+              } ${
+                feedback?.productId === product.id
+                  ? feedback.correct
+                    ? styles.feedbackCorrect
+                    : styles.feedbackWrong
+                  : ""
+              }`}
               style={
                 isDragging
                   ? { left: dragging.x, top: dragging.y }
@@ -46,8 +67,14 @@ export function ShelfGame() {
                   moveDrag(e.clientX, e.clientY);
                 }
               }}
-              onPointerUp={() => {
-                endDrag();
+              onPointerUp={(e) => {
+                const el = document.elementFromPoint(e.clientX, e.clientY);
+                const categoryEl = el?.closest<HTMLElement>(
+                  "[data-category-id]"
+                );
+                const categoryId = categoryEl?.dataset
+                  .categoryId as CategoryId | undefined;
+                attemptPlace(product.id, categoryId ?? null);
               }}
             >
               <ProductIcon product={product} />

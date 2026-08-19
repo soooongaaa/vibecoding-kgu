@@ -61,3 +61,18 @@
 .productName {
   font-size: 0.75rem;
 }
+
+.placedRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.feedbackCorrect {
+  outline: 3px solid #2e9e44;
+}
+
+.feedbackWrong {
+  outline: 3px solid #d9534f;
+}
