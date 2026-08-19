@@ -46,7 +46,7 @@ export function ShelfGame() {
   return (
     <main className={styles.page}>
       <header className={styles.hud}>
-        <h1 className={styles.title}>편의점 상품 진열</h1>
+        <h1 className={styles.title}>편의점 진열!!!</h1>
 
         <div className={styles.hudActions}>
           <span
