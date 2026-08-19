@@ -44,7 +44,16 @@ export function ShelfGame() {
             <h2 className={styles.categoryLabel}>{category.label}</h2>
             <div className={styles.placedRow}>
               {placedByCategory[category.id].map((product) => (
-                <ProductIcon key={product.id} product={product} />
+                <span
+                  key={product.id}
+                  className={
+                    feedback?.productId === product.id && feedback.correct
+                      ? styles.feedbackCorrect
+                      : undefined
+                  }
+                >
+                  <ProductIcon product={product} />
+                </span>
               ))}
             </div>
           </div>
