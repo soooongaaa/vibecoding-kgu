@@ -89,6 +89,7 @@ export function ShelfGame() {
                   .categoryId as CategoryId | undefined;
                 attemptPlace(product.id, categoryId ?? null);
               }}
+              onPointerCancel={() => attemptPlace(product.id, null)}
             >
               <ProductIcon product={product} />
               <span className={styles.productName}>{product.name}</span>

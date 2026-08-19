@@ -93,3 +93,17 @@
   color: #fff;
   font-size: 1rem;
 }
+
+@media (max-width: 480px) {
+  .categories {
+    grid-template-columns: 1fr;
+  }
+
+  .productChip {
+    padding: 6px 8px;
+  }
+
+  .productName {
+    font-size: 0.7rem;
+  }
+}
