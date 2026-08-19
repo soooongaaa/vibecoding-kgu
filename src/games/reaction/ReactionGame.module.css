@@ -1,0 +1,161 @@
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding: 24px 16px;
+  background: #0f172a;
+  color: #f8fafc;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  text-align: center;
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.roundBadge {
+  font-size: 13px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(248, 250, 252, 0.12);
+}
+
+.card {
+  width: min(100%, 420px);
+  background: #1e293b;
+  border-radius: 16px;
+  padding: 28px 24px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.card p {
+  margin: 0;
+  line-height: 1.6;
+  color: #cbd5e1;
+}
+
+.button {
+  border: 0;
+  border-radius: 10px;
+  padding: 14px 28px;
+  background: #22c55e;
+  color: #052e16;
+  font-weight: 800;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.buttonLight {
+  border: 0;
+  border-radius: 10px;
+  padding: 10px 20px;
+  background: #f8fafc;
+  color: #7f1d1d;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.stage {
+  width: min(100%, 420px);
+  aspect-ratio: 4 / 5;
+  border: 0;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 24px;
+  font-size: 22px;
+  font-weight: 800;
+  color: white;
+  cursor: pointer;
+  touch-action: manipulation;
+  user-select: none;
+}
+
+.stageWaiting {
+  background: #b91c1c;
+}
+
+.stageReady {
+  background: #16a34a;
+}
+
+.stageTooSoon {
+  background: #7f1d1d;
+  cursor: default;
+}
+
+.tooSoonBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  font-size: 17px;
+}
+
+.resultTime {
+  margin: 0;
+  font-size: 40px;
+  font-weight: 900;
+  color: #4ade80;
+}
+
+.gradeEmoji {
+  margin: 0;
+  font-size: 40px;
+}
+
+.card h2 {
+  margin: 0;
+}
+
+.summary {
+  display: flex;
+  gap: 24px;
+  margin: 0;
+}
+
+.summary dt {
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+.summary dd {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.roundList {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 6px;
+  font-size: 14px;
+  color: #cbd5e1;
+  text-align: left;
+}
+
+.roundList li {
+  background: rgba(248, 250, 252, 0.06);
+  border-radius: 8px;
+  padding: 8px 12px;
+}
