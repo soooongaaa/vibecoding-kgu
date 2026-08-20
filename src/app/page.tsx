@@ -4,9 +4,11 @@ import { useState } from "react";
 import Link from "next/link";
 import styles from "./page.module.css";
 import Ending from "./Ending";
+import TicketModal from "./TicketModal";
 import { zooGames } from "@/lib/game/zoo-games";
 import { clearNickname, useHydrated, useNickname } from "@/lib/nickname";
 import { clearLastRescued, resetRescue, useLastRescued, useRescued } from "@/lib/rescue";
+import { resetTickets, useTickets } from "@/lib/ticket";
 
 const HEART_COUNT = 7;
 
@@ -26,6 +28,8 @@ export default function Home() {
   // 엔딩은 파생 상태다. 전원 구출이면 저절로 뜨고, 닫으면 다시 뜨지 않는다.
   const [endingClosed, setEndingClosed] = useState(false);
   const [replay, setReplay] = useState(false);
+  const [ticketOpen, setTicketOpen] = useState(false);
+  const tickets = useTickets();
   const showEnding = (allRescued && !endingClosed) || replay;
 
   function closeEnding() {
@@ -35,6 +39,7 @@ export default function Home() {
 
   function reset() {
     resetRescue();
+    resetTickets();
     setEndingClosed(false);
     setReplay(false);
   }
@@ -103,6 +108,11 @@ export default function Home() {
               {allRescued && " · 전원 구출 완료! 🎉"}
             </span>
             <span>
+              {!allRescued && (
+                <button type="button" className={styles.ticketButton} onClick={() => setTicketOpen(true)}>
+                  🎟️ 구출권 {tickets}장
+                </button>
+              )}
               {allRescued && (
                 <button type="button" className={`${styles.resetButton} ${styles.replayButton}`} onClick={() => setReplay(true)}>
                   엔딩 다시 보기
@@ -184,6 +194,7 @@ export default function Home() {
         <span>{allRescued ? "열두 친구가 모두 자유를 찾았어요!" : "동물 친구들을 구하러 가볼까요?"}</span>
       </footer>
 
+      {ticketOpen && <TicketModal onClose={() => setTicketOpen(false)} />}
       {showEnding && <Ending onClose={closeEnding} />}
     </main>
   );
