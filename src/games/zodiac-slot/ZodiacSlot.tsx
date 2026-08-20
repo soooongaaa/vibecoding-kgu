@@ -151,7 +151,9 @@ export default function ZodiacSlot() {
     }
   }, []);
 
-  const stepFx = useCallback(() => {
+  // 프레임 루프를 useCallback 바깥의 이름 있는 함수로 두고 그 함수가 재귀한다.
+  // stepFx 안에서 stepFx 를 부르면 선언 전 참조라 react-hooks/immutability 에 걸린다.
+  const stepFx = useCallback(function tick(): void {
     const canvas = canvasRef.current;
     const ctx = canvas?.getContext("2d");
     if (!canvas || !ctx) return;
@@ -171,7 +173,7 @@ export default function ZodiacSlot() {
       ctx.fill();
     });
     ctx.globalAlpha = 1;
-    rafHandleRef.current = particlesRef.current.length > 0 ? requestAnimationFrame(stepFx) : null;
+    rafHandleRef.current = particlesRef.current.length > 0 ? requestAnimationFrame(tick) : null;
   }, []);
 
   const celebrate = useCallback(() => {

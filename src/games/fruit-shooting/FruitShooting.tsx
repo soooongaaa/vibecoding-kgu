@@ -204,6 +204,9 @@ export default function FruitShooting() {
 
   useEffect(() => {
     return () => {
+      // AudioContext 는 마운트가 아니라 첫 클릭 때 만들어진다.
+      // 규칙이 권하는 대로 지역 변수에 복사해 두면 언제나 null 이라 영영 닫히지 않는다.
+      // eslint-disable-next-line react-hooks/exhaustive-deps
       audioContextRef.current?.close();
     };
   }, []);

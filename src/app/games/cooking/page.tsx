@@ -1,7 +1,7 @@
 "use client";
 
-import { useCookingGame } from "./useCookingGame";
-import { INGREDIENT_EMOJI, MESSAGES, SPEECH, STAGES } from "./gameData";
+import { useCookingGame } from "@/games/cooking/useCookingGame";
+import { INGREDIENT_EMOJI, MESSAGES, SPEECH, STAGES } from "@/games/cooking/gameData";
 
 function Bowl({ stack }: { stack: { name: string; emoji: string }[] }) {
   if (stack.length === 0) return null;

@@ -122,7 +122,6 @@ export function useCookingGame() {
     if (status !== "stageClear") return;
     const timeout = setTimeout(() => beginStage(stageIndex + 1), 1200);
     return () => clearTimeout(timeout);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [status, stageIndex]);
 
   return {
