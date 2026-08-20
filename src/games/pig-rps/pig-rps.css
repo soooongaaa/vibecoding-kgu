@@ -1,0 +1,297 @@
+@import url('https://fonts.googleapis.com/css2?family=Jua&family=Black+Han+Sans&display=swap');
+
+/* 아기돼지 가위바위보.
+   왁뿌숭 ASMR 의 스타일 언어(두꺼운 흰 외곽선 + 글로우 + 말랑한 버튼)를
+   그대로 따르되 색만 아기돼지 분홍으로 바꿨다. */
+
+:root {
+  --pig: #e891a8;
+  --pig-deep: #c23a72;
+  --pig-ink: #4a2f45;
+}
+
+/* 게임 페이지에서만 적용한다. PigRpsGame 이 body 에 클래스를 붙였다 뗀다. */
+body.pig-rps-body * { box-sizing: border-box; }
+
+body.pig-rps-body {
+  margin: 0;
+  height: 100vh;
+  overflow: hidden;
+  background: #241d2b;
+  font-family: Jua, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+  color: var(--pig-ink);
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.outlined {
+  -webkit-text-stroke: 7px #fff;
+  paint-order: stroke fill;
+  text-shadow: 0 3px 0 rgba(120, 90, 160, .18), 0 0 18px var(--pig), 0 0 34px rgba(255,255,255,.7);
+}
+
+/* ══════════════ 웹캠 · 오버레이 ══════════════ */
+/* 웹캠 영상은 화면에 보여주지 않는다. 손 뼈대만 남긴다.
+   다만 display:none 으로 지우면 브라우저가 재생을 멈춰 손 인식이 죽는다.
+   요소는 그대로 두고 투명하게만 만든다. */
+#camWrap {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 50% 18%, rgba(255, 190, 214, .30), transparent 62%),
+    radial-gradient(circle at 12% 88%, rgba(255, 160, 200, .22), transparent 58%),
+    linear-gradient(165deg, #3a2740 0%, #2b1f33 55%, #241d2b 100%);
+}
+#cam {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scaleX(-1);
+  opacity: 0;
+  pointer-events: none;
+}
+#overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* ══════════════ HUD ══════════════ */
+#hud {
+  position: fixed;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  padding: max(14px, env(safe-area-inset-top)) 16px 0;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 10px;
+}
+
+#title {
+  justify-self: start;
+  font-family: 'Black Han Sans', Jua, sans-serif;
+  font-size: clamp(18px, 3vw, 26px);
+  color: #fff;
+  text-shadow: 0 2px 0 rgba(0,0,0,.25), 0 0 16px rgba(232,145,168,.9);
+}
+#title span { display: block; font-family: Jua, sans-serif; font-size: 11px; letter-spacing: 4px; opacity: .8; }
+
+#score {
+  justify-self: center;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 18px;
+  border-radius: 999px;
+  border: 4px solid #fff;
+  background: rgba(255, 255, 255, .18);
+  backdrop-filter: blur(6px);
+  font-family: 'Black Han Sans', Jua, sans-serif;
+  font-size: clamp(20px, 3.6vw, 30px);
+  color: #fff;
+}
+#score b { font-size: 1.25em; }
+#myScore { color: #ffe27a; }
+#theirScore { color: #ffb0c8; }
+#score .vs { font-size: .62em; opacity: .75; }
+
+#roundLabel {
+  justify-self: end;
+  padding: 7px 15px;
+  border-radius: 999px;
+  border: 3px solid #fff;
+  background: rgba(255,255,255,.16);
+  color: #fff;
+  font-size: 14px;
+}
+
+/* ══════════════ 카운트다운 ══════════════ */
+#countdown {
+  position: fixed;
+  left: 50%;
+  top: 34%;
+  transform: translate(-50%, -50%);
+  z-index: 6;
+  font-family: 'Black Han Sans', Jua, sans-serif;
+  font-size: clamp(56px, 15vw, 150px);
+  color: var(--pig);
+  pointer-events: none;
+}
+#countdown.pop { animation: countPop .5s cubic-bezier(.2, 1.5, .4, 1); }
+@keyframes countPop {
+  0%   { transform: translate(-50%, -50%) scale(.4); opacity: 0; }
+  45%  { transform: translate(-50%, -50%) scale(1.14); opacity: 1; }
+  100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+}
+
+/* ══════════════ 손 모양 대결 ══════════════ */
+#vsRow {
+  position: fixed;
+  left: 0; right: 0;
+  bottom: 15%;
+  z-index: 5;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: clamp(20px, 8vw, 90px);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .25s;
+}
+body.revealing #vsRow { opacity: 1; }
+
+.shapeBox { text-align: center; }
+.shapeBox .emoji {
+  display: block;
+  font-size: clamp(56px, 13vw, 120px);
+  line-height: 1.1;
+  filter: drop-shadow(0 8px 16px rgba(0,0,0,.4));
+  animation: shapeDrop .35s cubic-bezier(.2, 1.4, .4, 1);
+}
+@keyframes shapeDrop {
+  0%   { transform: translateY(-26px) scale(.7); opacity: 0; }
+  100% { transform: translateY(0) scale(1); opacity: 1; }
+}
+.shapeBox .who { display: block; font-size: 13px; letter-spacing: 3px; color: #fff; opacity: .75; }
+.shapeBox .label { display: block; font-size: clamp(16px, 2.6vw, 22px); color: #fff; }
+
+/* ══════════════ 결과 배너 ══════════════ */
+#banner {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%) scale(.6);
+  z-index: 8;
+  font-family: 'Black Han Sans', Jua, sans-serif;
+  font-size: clamp(40px, 10vw, 96px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .2s;
+  -webkit-text-stroke: 7px #fff;
+  paint-order: stroke fill;
+}
+#banner.show { opacity: 1; animation: bannerPop .45s cubic-bezier(.2, 1.5, .4, 1) forwards; }
+#banner.win  { color: #ff7fb0; text-shadow: 0 0 26px rgba(255,150,190,.95); }
+#banner.lose { color: #7f8bd6; text-shadow: 0 0 26px rgba(130,145,220,.9); }
+#banner.draw { color: #b6a4d4; text-shadow: 0 0 22px rgba(190,170,220,.85); }
+@keyframes bannerPop {
+  0%   { transform: translate(-50%, -50%) scale(.55); }
+  55%  { transform: translate(-50%, -50%) scale(1.12); }
+  100% { transform: translate(-50%, -50%) scale(1); }
+}
+
+/* ══════════════ 아래쪽 안내 ══════════════ */
+#hint {
+  position: fixed;
+  left: 50%;
+  bottom: 84px;
+  transform: translateX(-50%);
+  z-index: 4;
+  padding: 8px 18px;
+  border-radius: 999px;
+  background: rgba(36, 29, 43, .55);
+  color: #fff;
+  font-size: 15px;
+  opacity: 0;
+  transition: opacity .3s;
+  pointer-events: none;
+  white-space: nowrap;
+}
+#hint.show { opacity: 1; }
+
+#handBadge {
+  position: fixed;
+  left: 50%;
+  bottom: 34px;
+  transform: translateX(-50%);
+  z-index: 4;
+  padding: 8px 18px;
+  border-radius: 999px;
+  border: 3px solid #fff;
+  background: rgba(232, 145, 168, .85);
+  color: #fff;
+  font-size: 14px;
+  transition: background .25s;
+}
+#handBadge.off { background: rgba(90, 80, 100, .8); }
+
+/* ══════════════ 오버레이 공통 ══════════════ */
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: radial-gradient(circle at 50% 35%, rgba(255,255,255,.92), rgba(255, 224, 239, .95));
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .35s;
+}
+.overlay.show { opacity: 1; pointer-events: auto; }
+
+.card {
+  width: min(560px, 94vw);
+  max-height: 92vh;
+  overflow: auto;
+  background: #fff;
+  border-radius: 26px;
+  border: 5px solid #fff;
+  box-shadow: 0 16px 50px rgba(160, 70, 120, .3);
+  padding: 26px 22px;
+  text-align: center;
+}
+.card .pig-face { display: block; font-size: 72px; line-height: 1; margin-bottom: 4px; }
+.card h1 {
+  margin: 0 0 6px;
+  font-family: 'Black Han Sans', Jua, sans-serif;
+  font-size: clamp(26px, 5.2vw, 40px);
+  color: #ff6fa8;
+  -webkit-text-stroke: 6px #fff;
+  paint-order: stroke fill;
+  text-shadow: 0 0 16px rgba(255, 170, 205, .8);
+}
+.card p { margin: 8px 0; color: #6b5590; font-size: 15px; line-height: 1.7; }
+.card p.fine { font-size: 13px; opacity: .8; }
+
+.btn {
+  display: inline-block;
+  margin-top: 14px;
+  padding: 14px 30px;
+  border: 4px solid #fff;
+  border-radius: 999px;
+  background: linear-gradient(160deg, #ffa3c9, #ff6fa8);
+  color: #fff;
+  font-family: 'Black Han Sans', Jua, sans-serif;
+  font-size: 21px;
+  cursor: pointer;
+  box-shadow: 0 6px 0 rgba(190, 70, 120, .4), 0 10px 24px rgba(200, 90, 140, .3);
+  transition: transform .12s, box-shadow .12s;
+}
+.btn:active { transform: translateY(4px); box-shadow: 0 2px 0 rgba(190,70,120,.4); }
+.btn:disabled { filter: grayscale(.7); opacity: .6; cursor: default; }
+
+#startMsg { min-height: 44px; color: #a06a86; }
+
+.backLink {
+  display: inline-block;
+  margin-top: 14px;
+  color: #a06a86;
+  font-size: 14px;
+  text-decoration: underline;
+}
+
+
+/* 구출 배너는 이겼을 때만 보인다. main.js 가 body 에 rps-won 을 켠다. */
+#rescueSlot { display: none; }
+body.rps-won #rescueSlot { display: block; }

@@ -1,0 +1,63 @@
+/* 게임을 깬 순간 그 게임의 클리어 화면 안에 끼워 넣는 배너.
+   게임마다 오버레이 배경색이 달라서 반투명 흰 카드로 어디에나 얹히게 만들었다. */
+
+.banner {
+  display: grid;
+  justify-items: center;
+  gap: 9px;
+  margin-top: 14px;
+  padding: 15px 16px;
+  border-radius: 18px;
+  border: 2px solid rgba(255, 255, 255, .85);
+  background: linear-gradient(160deg, rgba(255, 255, 255, .96), rgba(255, 244, 232, .96));
+  box-shadow: 0 10px 26px rgba(90, 60, 40, .18);
+  animation: rise .45s cubic-bezier(.2, 1.4, .4, 1) both;
+}
+@keyframes rise {
+  from { opacity: 0; transform: translateY(12px) scale(.96); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.head { display: flex; align-items: center; gap: 8px; }
+.emoji {
+  font-size: 34px;
+  line-height: 1;
+  animation: cheer 1.4s ease-in-out infinite;
+}
+@keyframes cheer {
+  0%, 100% { rotate: -8deg; }
+  50%      { rotate: 8deg; }
+}
+
+.title {
+  color: #c2492a;
+  font-size: 19px;
+  font-weight: 900;
+  letter-spacing: -.03em;
+}
+.sub { margin: 0; color: #7a6252; font-size: 12px; text-align: center; line-height: 1.6; }
+
+.link {
+  display: inline-block;
+  margin-top: 2px;
+  border-radius: 999px;
+  padding: 11px 22px;
+  background: linear-gradient(160deg, #62a86f, #3b784d);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 800;
+  text-decoration: none;
+  box-shadow: 0 5px 0 rgba(40, 76, 51, .35);
+}
+.link:active { transform: translateY(2px); box-shadow: 0 3px 0 rgba(40, 76, 51, .35); }
+
+.hearts { display: flex; gap: 3px; font-size: 13px; }
+.heart { animation: bob 1.1s ease-in-out infinite; }
+@keyframes bob {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-4px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .banner, .emoji, .heart { animation: none; }
+}
