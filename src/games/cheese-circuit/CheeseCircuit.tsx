@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { rescue } from "@/lib/rescue";
 import styles from "./CheeseCircuit.module.css";
 import {
   createBoard,
@@ -55,6 +56,11 @@ export default function CheeseCircuit() {
   const [board, setBoard] = useState<Board | null>(null);
   const [turns, setTurns] = useState<number[]>([]);
   const [phase, setPhase] = useState<Phase>("ready");
+
+  // 게임을 깨면 허브의 동물이 철창에서 풀려난다. 게임 로직은 건드리지 않는다.
+  useEffect(() => {
+    if (phase === "won") rescue("mouse");
+  }, [phase]);
   const [moves, setMoves] = useState(0);
   const [elapsed, setElapsed] = useState(0);
   const [stageScore, setStageScore] = useState(0);

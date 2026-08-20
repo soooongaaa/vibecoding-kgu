@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { rescue } from "@/lib/rescue";
 import styles from "./ReactionGame.module.css";
 
 const TOTAL_ROUNDS = 5;
@@ -18,6 +19,11 @@ function getGrade(averageMs: number) {
 
 export default function ReactionGame() {
   const [phase, setPhase] = useState<Phase>("idle");
+
+  // 게임을 깨면 허브의 동물이 철창에서 풀려난다. 게임 로직은 건드리지 않는다.
+  useEffect(() => {
+    if (phase === "finished") rescue("horse");
+  }, [phase]);
   const [round, setRound] = useState(1);
   const [records, setRecords] = useState<number[]>([]);
   const [lastResultMs, setLastResultMs] = useState<number | null>(null);

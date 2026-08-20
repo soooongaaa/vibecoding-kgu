@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { rescue } from "@/lib/rescue";
 import styles from "./BrickBreaker.module.css";
 import {
   sfxBrickBreak,
@@ -96,6 +97,11 @@ function spawnParticles(x: number, y: number, color: string): Particle[] {
 export default function BrickBreaker() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [phase, setPhase] = useState<Phase>("ready");
+
+  // 게임을 깨면 허브의 동물이 철창에서 풀려난다. 게임 로직은 건드리지 않는다.
+  useEffect(() => {
+    if (phase === "cleared") rescue("tiger");
+  }, [phase]);
   const [lives, setLives] = useState(STARTING_LIVES);
   const [muted, setMuted] = useState(false);
 

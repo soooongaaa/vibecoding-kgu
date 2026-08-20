@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState, type KeyboardEvent as ReactKeyboardEvent } from "react";
+import { rescue } from "@/lib/rescue";
 import styles from "./ZodiacSlot.module.css";
 
 const SYMBOLS = ["🐭", "🐮", "🐯", "🐰", "🐲", "🐍", "🐴", "🐑", "🐵", "🐔", "🐶", "🐷"];
@@ -51,6 +52,11 @@ export default function ZodiacSlot() {
   const [pulled, setPulled] = useState(false);
   const [spinning, setSpinning] = useState(false);
   const [result, setResult] = useState<"win" | "lose" | null>(null);
+
+  // 게임을 깨면 허브의 동물이 철창에서 풀려난다. 게임 로직은 건드리지 않는다.
+  useEffect(() => {
+    if (result === "win") rescue("dragon");
+  }, [result]);
 
   const flickerHandles = useRef<ReturnType<typeof setInterval>[]>([]);
   const timeoutHandles = useRef<ReturnType<typeof setTimeout>[]>([]);

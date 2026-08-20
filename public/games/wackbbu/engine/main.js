@@ -15,6 +15,7 @@ import { Overlay, Cheers } from './effects.js';
 import { World } from './scene3d.js';
 import { VotePreview } from './votepreview.js';
 import { UI } from './ui.js';
+import { rescue } from '../../_shared/rescue.js';
 
 const $ = (id) => document.getElementById(id);
 const VOTE_KEY = 'wakppusoong.votes';
@@ -234,6 +235,7 @@ function castVote(stage) {
 
 function showEnding() {
   finished = true;
+  rescue('monkey'); // 허브의 원숭이가 철창에서 풀려난다
   locked = true;
   bonus = false;
   document.body.classList.remove('bonus');

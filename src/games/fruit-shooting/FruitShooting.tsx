@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { rescue } from "@/lib/rescue";
 import styles from "./FruitShooting.module.css";
 import {
   CANVAS_WIDTH,
@@ -133,6 +134,11 @@ function drawCloud(ctx: CanvasRenderingContext2D, x: number, y: number) {
 export default function FruitShooting() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [phase, setPhase] = useState<Phase>("ready");
+
+  // 게임을 깨면 허브의 동물이 철창에서 풀려난다. 게임 로직은 건드리지 않는다.
+  useEffect(() => {
+    if (phase === "cleared") rescue("sheep");
+  }, [phase]);
   const [hitCount, setHitCount] = useState(0);
   const [remainingSeconds, setRemainingSeconds] = useState(
     Math.ceil(GAME_DURATION_MS / 1000),

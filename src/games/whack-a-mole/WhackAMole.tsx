@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { rescue } from "@/lib/rescue";
 import styles from "./WhackAMole.module.css";
 
 const HOLE_COUNT = 9;
@@ -29,6 +30,11 @@ function randomBetween(min: number, max: number) {
 
 export default function WhackAMole() {
   const [phase, setPhase] = useState<Phase>("idle");
+
+  // 게임을 깨면 허브의 동물이 철창에서 풀려난다. 게임 로직은 건드리지 않는다.
+  useEffect(() => {
+    if (phase === "finished") rescue("rabbit");
+  }, [phase]);
   const [activeHole, setActiveHole] = useState<number | null>(null);
   const [score, setScore] = useState(0);
   const [misses, setMisses] = useState(0);

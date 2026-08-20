@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { rescue } from "@/lib/rescue";
 import { ProductIcon } from "./ProductIcon";
 import { DeliveryBox, PottedPlant } from "./StoreDecor";
 import { useShelfGame } from "./useShelfGame";
@@ -37,6 +38,11 @@ export function ShelfGame() {
     restart,
     nextLevel,
   } = useShelfGame();
+
+  // 게임을 깨면 허브의 동물이 철창에서 풀려난다. 게임 로직은 건드리지 않는다.
+  useEffect(() => {
+    if (phase === "cleared") rescue("dog");
+  }, [phase]);
 
   function toggleSound() {
     const next = !soundOn;

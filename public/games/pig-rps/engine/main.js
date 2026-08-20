@@ -12,6 +12,7 @@ import { Match, judge, randomShape } from './round.js';
 import { Overlay } from './overlay.js';
 import { UI } from './ui.js';
 import { unlock, countBeep, outcomeSound, fanfare, retrySound } from './audio.js';
+import { rescue } from '../../_shared/rescue.js';
 
 const $ = (id) => document.getElementById(id);
 
@@ -132,6 +133,7 @@ function settle() {
       ui.hideBanner();
       ui.showEnd(match.won, match.wins, match.losses);
       fanfare(match.won);
+      if (match.won) rescue('pig'); // 이겼을 때만 구출된다
     } else {
       startCountdown();
     }

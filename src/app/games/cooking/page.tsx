@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect } from "react";
+import { rescue } from "@/lib/rescue";
 import { useCookingGame } from "@/games/cooking/useCookingGame";
 import { INGREDIENT_EMOJI, MESSAGES, SPEECH, STAGES } from "@/games/cooking/gameData";
 
@@ -20,6 +22,11 @@ function Bowl({ stack }: { stack: { name: string; emoji: string }[] }) {
 
 export default function GamePage() {
   const game = useCookingGame();
+
+  // 게임을 깨면 허브의 동물이 철창에서 풀려난다.
+  useEffect(() => {
+    if (game.status === "won") rescue("chicken");
+  }, [game.status]);
   const stage = STAGES[game.stageIndex];
   const urgent = game.timeLeft <= 10;
 

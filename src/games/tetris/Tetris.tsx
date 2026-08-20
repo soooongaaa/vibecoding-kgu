@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { rescue } from "@/lib/rescue";
 import styles from "./Tetris.module.css";
 import {
   sfxClear,
@@ -149,6 +150,11 @@ type Phase = "ready" | "playing" | "cleared" | "over";
 export default function Tetris() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [phase, setPhase] = useState<Phase>("ready");
+
+  // 게임을 깨면 허브의 동물이 철창에서 풀려난다. 게임 로직은 건드리지 않는다.
+  useEffect(() => {
+    if (phase === "cleared") rescue("snake");
+  }, [phase]);
   const [level, setLevel] = useState(1);
   const [lines, setLines] = useState(0);
   const [nextType, setNextType] = useState<PieceType>(() => randomPieceType());
