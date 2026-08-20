@@ -12,7 +12,7 @@ export const zooGames: ZooGame[] = [
   { slug: "monkey", animal: "원숭이", emoji: "🐵", gameName: "왁뿌숭 ASMR", color: "#df9d5d", href: "/games/wackbbu", available: true },
   { slug: "chicken", animal: "꼬꼬닭", emoji: "🐔", gameName: "리듬 타임", color: "#e17763", href: "/games/chicken", available: false },
   { slug: "dog", animal: "강아지", emoji: "🐶", gameName: "냄새 탐정", color: "#d1aa66", href: "/games/dog", available: false },
-  { slug: "pig", animal: "아기돼지", emoji: "🐷", gameName: "간식 쌓기", color: "#e891a8", href: "/games/pig", available: false },
+  { slug: "pig", animal: "아기돼지", emoji: "🐷", gameName: "가위바위보", color: "#e891a8", href: "/games/pig-rps", available: true },
 ];
 
 export function getZooGame(slug: string) { return zooGames.find((game) => game.slug === slug); }
