@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { rescue } from "@/lib/rescue";
+import RescueBanner from "@/components/game/RescueBanner";
 import styles from "./FruitShooting.module.css";
 import {
   CANVAS_WIDTH,
@@ -373,6 +374,7 @@ export default function FruitShooting() {
             <button className={styles.button} onClick={startGame}>
               다시 하기
             </button>
+            <RescueBanner slug="sheep" />
           </div>
         )}
 

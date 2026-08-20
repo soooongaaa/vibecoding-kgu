@@ -290,3 +290,8 @@ body.revealing #vsRow { opacity: 1; }
   font-size: 14px;
   text-decoration: underline;
 }
+
+
+/* 구출 배너는 이겼을 때만 보인다. main.js 가 body 에 rps-won 을 켠다. */
+#rescueSlot { display: none; }
+body.rps-won #rescueSlot { display: block; }

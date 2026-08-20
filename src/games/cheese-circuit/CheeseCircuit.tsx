@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { rescue } from "@/lib/rescue";
+import RescueBanner from "@/components/game/RescueBanner";
 import styles from "./CheeseCircuit.module.css";
 import {
   createBoard,
@@ -334,6 +335,7 @@ export default function CheeseCircuit() {
             <button className={styles.button} onClick={startRun}>
               다시 하기
             </button>
+            <RescueBanner slug="mouse" />
           </div>
         )}
       </div>

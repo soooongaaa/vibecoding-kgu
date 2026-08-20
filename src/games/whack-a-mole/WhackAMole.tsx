@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { rescue } from "@/lib/rescue";
+import RescueBanner from "@/components/game/RescueBanner";
 import styles from "./WhackAMole.module.css";
 
 const HOLE_COUNT = 9;
@@ -201,6 +202,7 @@ export default function WhackAMole() {
           <button type="button" className={styles.button} onClick={startGame}>
             다시 하기
           </button>
+          <RescueBanner slug="rabbit" />
         </section>
       )}
     </main>

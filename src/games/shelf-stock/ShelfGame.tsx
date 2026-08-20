@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { rescue } from "@/lib/rescue";
+import RescueBanner from "@/components/game/RescueBanner";
 import { ProductIcon } from "./ProductIcon";
 import { DeliveryBox, PottedPlant } from "./StoreDecor";
 import { useShelfGame } from "./useShelfGame";
@@ -203,6 +204,7 @@ export function ShelfGame() {
                 다시 도전
               </button>
             </div>
+            {phase === "cleared" && <RescueBanner slug="dog" />}
           </div>
         )}
       </div>

@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState, type KeyboardEvent as ReactKeyboardEvent } from "react";
 import { rescue } from "@/lib/rescue";
+import RescueBanner from "@/components/game/RescueBanner";
 import styles from "./ZodiacSlot.module.css";
 
 const SYMBOLS = ["🐭", "🐮", "🐯", "🐰", "🐲", "🐍", "🐴", "🐑", "🐵", "🐔", "🐶", "🐷"];
@@ -330,6 +331,7 @@ export default function ZodiacSlot() {
               <span className={`${styles.spark} ${styles.sparkS4}`}>✨</span>
               <span className={styles.headline}>🎉 당첨! 🎉</span>
               <span className={styles.sub}>복이 들어왔어요</span>
+              <RescueBanner slug="dragon" />
             </div>
           )}
           {result === "lose" && (

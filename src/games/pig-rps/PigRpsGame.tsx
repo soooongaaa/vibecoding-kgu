@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import Link from "next/link";
+import RescueBanner from "@/components/game/RescueBanner";
 import "./pig-rps.css";
 
 const ENGINE_SRC = "/games/pig-rps/engine/main.js";
@@ -18,7 +19,7 @@ export default function PigRpsGame() {
 
     return () => {
       script.remove();
-      document.body.classList.remove("pig-rps-body", "revealing");
+      document.body.classList.remove("pig-rps-body", "revealing", "rps-won");
     };
   }, []);
 
@@ -85,6 +86,8 @@ export default function PigRpsGame() {
           <h1 id="endTitle">이겼다!</h1>
           <p id="endDesc" />
           <button id="againBtn" className="btn">다시 하기</button>
+          {/* 이겼을 때만 보인다. 엔진이 body 에 rps-won 을 켠다. */}
+          <div id="rescueSlot"><RescueBanner slug="pig" /></div>
           <Link className="backLink" href="/">다른 동물 만나러 가기</Link>
         </div>
       </div>

@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { rescue } from "@/lib/rescue";
+import RescueBanner from "@/components/game/RescueBanner";
 import styles from "./ObstacleDodge.module.css";
 import {
   CANVAS_WIDTH,
@@ -367,6 +368,7 @@ export default function ObstacleDodge() {
             <button className={styles.button} onClick={startGame}>
               다시하기
             </button>
+            <RescueBanner slug="cow" />
           </div>
         )}
 

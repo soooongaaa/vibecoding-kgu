@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { rescue } from "@/lib/rescue";
+import RescueBanner from "@/components/game/RescueBanner";
 import { useCookingGame } from "@/games/cooking/useCookingGame";
 import { INGREDIENT_EMOJI, MESSAGES, SPEECH, STAGES } from "@/games/cooking/gameData";
 
@@ -164,6 +165,7 @@ export default function GamePage() {
                     {MESSAGES.win(((game.totalTimeMs ?? 0) / 1000).toFixed(1))}
                   </p>
                   <button className="cta" type="button" onClick={game.start}>다시 도전</button>
+                  <RescueBanner slug="chicken" />
                 </div>
               )}
             </main>

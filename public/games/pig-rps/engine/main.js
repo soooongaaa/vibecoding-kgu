@@ -133,7 +133,9 @@ function settle() {
       ui.hideBanner();
       ui.showEnd(match.won, match.wins, match.losses);
       fanfare(match.won);
-      if (match.won) rescue('pig'); // 이겼을 때만 구출된다
+      // 져도 종료 화면은 뜬다. 구출 배너는 이겼을 때만 보여야 한다.
+      document.body.classList.toggle('rps-won', match.won);
+      if (match.won) rescue('pig');
     } else {
       startCountdown();
     }
@@ -171,6 +173,7 @@ async function start() {
 
 function playAgain() {
   clearTimers();
+  document.body.classList.remove('rps-won');
   match.reset();
   ui.hideEnd();
   ui.clearShapes();
