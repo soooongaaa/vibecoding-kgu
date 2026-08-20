@@ -2,61 +2,51 @@
 
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
+import { NICKNAME_MAX, saveNickname, useNickname } from "@/lib/nickname";
 
-export default function LoginPage() {
+export default function EnterPage() {
   const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [message, setMessage] = useState("");
-  const [isError, setIsError] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const saved = useNickname();
+  // 아직 아무것도 입력하지 않았으면 저장된 닉네임을 보여준다.
+  // 사용자가 한 글자라도 치면 그때부터 typed 가 값을 쥔다.
+  const [typed, setTyped] = useState<string | null>(null);
+  const [error, setError] = useState("");
+  const nickname = typed ?? saved ?? "";
 
-  async function login(event: FormEvent) {
+  function enter(event: FormEvent) {
     event.preventDefault();
-    setLoading(true);
-    const supabase = createClient();
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    setLoading(false);
-    if (error) {
-      setIsError(true);
-      setMessage(error.message);
+    const name = nickname.trim();
+    if (!name) {
+      setError("닉네임을 입력해 주세요.");
       return;
     }
+    saveNickname(name);
     router.push("/");
-    router.refresh();
-  }
-
-  async function signUp() {
-    setLoading(true);
-    const supabase = createClient();
-    const redirectTo = `${window.location.origin}/auth/callback`;
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: { emailRedirectTo: redirectTo },
-    });
-    setLoading(false);
-    setIsError(Boolean(error));
-    setMessage(error?.message ?? "확인 이메일을 보냈습니다. 이메일에서 가입을 완료해 주세요.");
   }
 
   return (
     <main className="page">
       <section className="card">
-        <h1>로그인</h1>
-        <p>이메일과 비밀번호로 로그인하거나 회원가입하세요.</p>
-        <form className="form" onSubmit={login}>
-          <label>이메일
-            <input type="email" value={email} onChange={(event) => setEmail(event.target.value)} required />
+        <h1>동물원 입장</h1>
+        <p>닉네임만 정하면 바로 들어갈 수 있어요.</p>
+        <form className="form" onSubmit={enter}>
+          <label>
+            닉네임
+            <input
+              type="text"
+              value={nickname}
+              maxLength={NICKNAME_MAX}
+              placeholder="예: 사자왕"
+              onChange={(event) => {
+                setTyped(event.target.value);
+                if (error) setError("");
+              }}
+              autoFocus
+            />
           </label>
-          <label>비밀번호
-            <input type="password" minLength={6} value={password} onChange={(event) => setPassword(event.target.value)} required />
-          </label>
-          {message && <div className={`message ${isError ? "error" : "success"}`}>{message}</div>}
+          {error && <div className="message error">{error}</div>}
           <div className="actions">
-            <button type="submit" disabled={loading}>{loading ? "처리 중…" : "로그인"}</button>
-            <button className="secondary" type="button" disabled={loading} onClick={signUp}>회원가입</button>
+            <button type="submit">입장하기</button>
           </div>
         </form>
       </section>
