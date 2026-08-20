@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import RescueBanner from "@/components/game/RescueBanner";
 import "./wackbbu.css";
 
 const LOGO_SRC = "/games/wackbbu/logo.png";
@@ -118,6 +119,7 @@ export default function WackbbuGame() {
           <p>모든 왁뿌를 다 뿌셨습니다.</p>
           <p id="endPick" />
           <button id="againBtn" className="btn">다시 하기</button>
+          <RescueBanner slug="monkey" />
         </div>
       </div>
     </>

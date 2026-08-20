@@ -1,7 +1,19 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { rescue } from "@/lib/rescue";
+import RescueBanner from "@/components/game/RescueBanner";
 import styles from "./BrickBreaker.module.css";
+import {
+  sfxBrickBreak,
+  sfxClear,
+  sfxGameOver,
+  sfxLifeLost,
+  sfxPaddleHit,
+  sfxWallBounce,
+  startMusic,
+  stopMusic,
+} from "./sound";
 
 const CANVAS_WIDTH = 400;
 const CANVAS_HEIGHT = 600;
@@ -20,12 +32,26 @@ const PADDLE_SPEED = 6;
 const BALL_RADIUS = 7;
 const BALL_SPEED = 4.5;
 const STARTING_LIVES = 3;
-const POINTS_PER_BRICK = 10;
 const INITIAL_PADDLE_X = (CANVAS_WIDTH - PADDLE_WIDTH) / 2;
+const CLEAR_BRICKS = Math.ceil((ROWS * COLS) / 2);
+const BOARD_FILL = "#1e293b";
+const TRAIL_LENGTH = 8;
+const PADDLE_FLASH_MS = 150;
 
-type Phase = "ready" | "playing" | "won" | "lost";
+const ROW_COLORS = ["#f87171", "#fb923c", "#facc15", "#4ade80", "#38bdf8"];
 
-type Brick = { x: number; y: number; alive: boolean };
+type Phase = "ready" | "playing" | "cleared" | "lost";
+
+type Brick = { x: number; y: number; alive: boolean; row: number };
+
+type Particle = {
+  x: number;
+  y: number;
+  vx: number;
+  vy: number;
+  life: number;
+  color: string;
+};
 
 function createBricks(): Brick[] {
   const bricks: Brick[] = [];
@@ -35,6 +61,7 @@ function createBricks(): Brick[] {
         x: BRICK_SIDE_OFFSET + col * (BRICK_WIDTH + BRICK_PADDING),
         y: BRICK_TOP_OFFSET + row * (BRICK_HEIGHT + BRICK_PADDING),
         alive: true,
+        row,
       });
     }
   }
@@ -50,30 +77,61 @@ function createBallOnPaddle(paddleX: number) {
   };
 }
 
+function spawnParticles(x: number, y: number, color: string): Particle[] {
+  const particles: Particle[] = [];
+  const count = 8;
+  for (let i = 0; i < count; i++) {
+    const angle = (Math.PI * 2 * i) / count;
+    const speed = 1.5 + Math.random() * 2;
+    particles.push({
+      x,
+      y,
+      vx: Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed,
+      life: 1,
+      color,
+    });
+  }
+  return particles;
+}
+
 export default function BrickBreaker() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [phase, setPhase] = useState<Phase>("ready");
-  const [score, setScore] = useState(0);
+
+  // 게임을 깨면 허브의 동물이 철창에서 풀려난다. 게임 로직은 건드리지 않는다.
+  useEffect(() => {
+    if (phase === "cleared") rescue("tiger");
+  }, [phase]);
   const [lives, setLives] = useState(STARTING_LIVES);
+  const [muted, setMuted] = useState(false);
 
   const phaseRef = useRef<Phase>("ready");
   const bricksRef = useRef<Brick[]>(createBricks());
   const paddleXRef = useRef(INITIAL_PADDLE_X);
   const ballRef = useRef(createBallOnPaddle(INITIAL_PADDLE_X));
+  const trailRef = useRef<{ x: number; y: number }[]>([]);
+  const particlesRef = useRef<Particle[]>([]);
   const keysRef = useRef<{ left: boolean; right: boolean }>({
     left: false,
     right: false,
   });
-  const scoreRef = useRef(0);
+  const brokenRef = useRef(0);
   const livesRef = useRef(STARTING_LIVES);
+  const clearedRef = useRef(false);
+  const mutedRef = useRef(false);
+  const paddleFlashUntilRef = useRef(0);
 
   const resetGame = useCallback(() => {
     bricksRef.current = createBricks();
     paddleXRef.current = (CANVAS_WIDTH - PADDLE_WIDTH) / 2;
     ballRef.current = createBallOnPaddle(paddleXRef.current);
-    scoreRef.current = 0;
+    trailRef.current = [];
+    particlesRef.current = [];
+    brokenRef.current = 0;
     livesRef.current = STARTING_LIVES;
-    setScore(0);
+    clearedRef.current = false;
+    paddleFlashUntilRef.current = 0;
     setLives(STARTING_LIVES);
   }, []);
 
@@ -81,7 +139,19 @@ export default function BrickBreaker() {
     resetGame();
     phaseRef.current = "playing";
     setPhase("playing");
+    if (!mutedRef.current) startMusic();
   }, [resetGame]);
+
+  const toggleMute = useCallback(() => {
+    mutedRef.current = !mutedRef.current;
+    setMuted(mutedRef.current);
+    if (mutedRef.current) stopMusic();
+    else if (phaseRef.current === "playing") startMusic();
+  }, []);
+
+  useEffect(() => {
+    return () => stopMusic();
+  }, []);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -135,19 +205,38 @@ export default function BrickBreaker() {
 
     let animationId: number;
 
-    const draw = () => {
+    const draw = (time: number) => {
       ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
-      ctx.fillStyle = "#0f172a";
+      ctx.fillStyle = BOARD_FILL;
       ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
       for (const brick of bricksRef.current) {
         if (!brick.alive) continue;
-        ctx.fillStyle = "#f59e0b";
+        ctx.fillStyle = ROW_COLORS[brick.row % ROW_COLORS.length];
         ctx.fillRect(brick.x, brick.y, BRICK_WIDTH, BRICK_HEIGHT);
       }
 
-      ctx.fillStyle = "#38bdf8";
+      for (const p of particlesRef.current) {
+        ctx.globalAlpha = Math.max(p.life, 0);
+        ctx.fillStyle = p.color;
+        ctx.fillRect(p.x - 2, p.y - 2, 4, 4);
+      }
+      ctx.globalAlpha = 1;
+
+      const trail = trailRef.current;
+      for (let i = 0; i < trail.length; i++) {
+        const t = trail[i];
+        ctx.globalAlpha = ((i + 1) / trail.length) * 0.35;
+        ctx.beginPath();
+        ctx.arc(t.x, t.y, BALL_RADIUS * 0.8, 0, Math.PI * 2);
+        ctx.fillStyle = "#38bdf8";
+        ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+
+      const paddleFlashing = time < paddleFlashUntilRef.current;
+      ctx.fillStyle = paddleFlashing ? "#e0f2fe" : "#38bdf8";
       ctx.fillRect(paddleXRef.current, PADDLE_Y, PADDLE_WIDTH, PADDLE_HEIGHT);
 
       const ball = ballRef.current;
@@ -157,9 +246,9 @@ export default function BrickBreaker() {
       ctx.fill();
     };
 
-    const step = () => {
+    const step = (time: number) => {
       if (phaseRef.current !== "playing") {
-        draw();
+        draw(time);
         animationId = requestAnimationFrame(step);
         return;
       }
@@ -178,16 +267,31 @@ export default function BrickBreaker() {
       ball.x += ball.vx;
       ball.y += ball.vy;
 
+      trailRef.current.push({ x: ball.x, y: ball.y });
+      if (trailRef.current.length > TRAIL_LENGTH) trailRef.current.shift();
+
+      particlesRef.current = particlesRef.current
+        .map((p) => ({
+          ...p,
+          x: p.x + p.vx,
+          y: p.y + p.vy,
+          life: p.life - 0.05,
+        }))
+        .filter((p) => p.life > 0);
+
       if (ball.x - BALL_RADIUS < 0) {
         ball.x = BALL_RADIUS;
         ball.vx *= -1;
+        if (!mutedRef.current) sfxWallBounce();
       } else if (ball.x + BALL_RADIUS > CANVAS_WIDTH) {
         ball.x = CANVAS_WIDTH - BALL_RADIUS;
         ball.vx *= -1;
+        if (!mutedRef.current) sfxWallBounce();
       }
       if (ball.y - BALL_RADIUS < 0) {
         ball.y = BALL_RADIUS;
         ball.vy *= -1;
+        if (!mutedRef.current) sfxWallBounce();
       }
 
       if (
@@ -205,6 +309,8 @@ export default function BrickBreaker() {
         ball.vx = speed * Math.sin(angle);
         ball.vy = -Math.abs(speed * Math.cos(angle));
         ball.y = PADDLE_Y - BALL_RADIUS;
+        paddleFlashUntilRef.current = time + PADDLE_FLASH_MS;
+        if (!mutedRef.current) sfxPaddleHit();
       }
 
       for (const brick of bricksRef.current) {
@@ -217,29 +323,46 @@ export default function BrickBreaker() {
         ) {
           brick.alive = false;
           ball.vy *= -1;
-          scoreRef.current += POINTS_PER_BRICK;
-          setScore(scoreRef.current);
+          brokenRef.current += 1;
+          if (!mutedRef.current) sfxBrickBreak();
+          particlesRef.current.push(
+            ...spawnParticles(
+              brick.x + BRICK_WIDTH / 2,
+              brick.y + BRICK_HEIGHT / 2,
+              ROW_COLORS[brick.row % ROW_COLORS.length],
+            ),
+          );
+
+          if (!clearedRef.current && brokenRef.current >= CLEAR_BRICKS) {
+            clearedRef.current = true;
+            phaseRef.current = "cleared";
+            setPhase("cleared");
+            stopMusic();
+            if (!mutedRef.current) sfxClear();
+          }
           break;
         }
       }
 
-      if (ball.y - BALL_RADIUS > CANVAS_HEIGHT) {
+      if (
+        phaseRef.current === "playing" &&
+        ball.y - BALL_RADIUS > CANVAS_HEIGHT
+      ) {
         livesRef.current -= 1;
         setLives(livesRef.current);
         if (livesRef.current <= 0) {
           phaseRef.current = "lost";
           setPhase("lost");
+          stopMusic();
+          if (!mutedRef.current) sfxGameOver();
         } else {
+          if (!mutedRef.current) sfxLifeLost();
           ballRef.current = createBallOnPaddle(paddleXRef.current);
+          trailRef.current = [];
         }
       }
 
-      if (bricksRef.current.every((b) => !b.alive)) {
-        phaseRef.current = "won";
-        setPhase("won");
-      }
-
-      draw();
+      draw(time);
       animationId = requestAnimationFrame(step);
     };
 
@@ -249,10 +372,18 @@ export default function BrickBreaker() {
 
   return (
     <div className={styles.wrap}>
-      <h1 className={styles.title}>벽돌깨기</h1>
+      <div className={styles.topBar}>
+        <h1 className={styles.title}>벽돌깨기</h1>
+        <button
+          className={styles.muteButton}
+          onClick={toggleMute}
+          aria-label={muted ? "소리 켜기" : "소리 끄기"}
+        >
+          {muted ? "🔇" : "🔊"}
+        </button>
+      </div>
 
       <div className={styles.hud}>
-        <span>점수: {score}</span>
         <span>목숨: {lives}</span>
       </div>
 
@@ -275,18 +406,20 @@ export default function BrickBreaker() {
           </div>
         )}
 
-        {phase === "won" && (
-          <div className={styles.overlay}>
-            <p className={styles.result}>클리어! 점수 {score}</p>
+        {phase === "cleared" && (
+          <div className={styles.clearOverlay}>
+            <div className={styles.clearTitle}>CLEAR</div>
+            <p className={styles.clearSubtext}>동물을 획득할 수 있어요!</p>
             <button className={styles.button} onClick={startGame}>
               다시 하기
             </button>
+            <RescueBanner slug="tiger" />
           </div>
         )}
 
         {phase === "lost" && (
           <div className={styles.overlay}>
-            <p className={styles.result}>게임 오버. 점수 {score}</p>
+            <p className={styles.result}>게임 오버</p>
             <button className={styles.button} onClick={startGame}>
               다시 하기
             </button>
